@@ -1,6 +1,6 @@
 #pragma once
 
-#include <windows.h>
+#include "Renderer/Renderer.h"
 
 namespace DX11Renderer
 {
@@ -13,7 +13,12 @@ namespace DX11Renderer
 		bool Frame();
 
 	private:
-		App() {}
 		bool Render();
+		
+	private:
+		Renderer* m_renderer = nullptr;
+
+		bool m_initialized = false;
+		bool m_fullscreen = false;
 	};
 }

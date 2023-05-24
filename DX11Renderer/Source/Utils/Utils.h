@@ -8,4 +8,11 @@ namespace DX11Renderer
 		delete ptr;
 		ptr = nullptr;
 	}
+
+	template<typename T>
+	void SafeDelArray(T ptr)
+	{
+		delete[] ptr;
+		ptr = nullptr;
+	}
 }
