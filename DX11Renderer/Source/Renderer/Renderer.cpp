@@ -98,7 +98,7 @@ namespace DX11Renderer
 		}
 
 		// Release the display mode list.
-		SafeDelArray(displayModeList);
+		Utils::SafeDelArray(displayModeList);
 
 		// Release the adapter output.
 		adapterOutput->Release();
@@ -400,5 +400,7 @@ namespace DX11Renderer
 
 	void Renderer::GetVideoCardInfo(char* cardName, int& memory)
 	{
+		strcpy_s(cardName, 128, m_videoCardDescription);
+		memory = m_videoCardMemory;
 	}
 }

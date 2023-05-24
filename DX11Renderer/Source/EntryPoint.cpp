@@ -19,7 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 
 	// Shutdown and release the system object.
 	main->Shutdown();
-	SafeDel(main);
+	DX11Renderer::Utils::SafeDel(main);
 
 	return 0;
 }

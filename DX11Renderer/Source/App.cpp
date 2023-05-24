@@ -1,5 +1,6 @@
 #include "App.h"
 #include "Utils/Utils.h"
+#include <iostream>
 
 namespace DX11Renderer
 {
@@ -30,7 +31,7 @@ namespace DX11Renderer
 		if (m_initialized)
 		{
 			m_renderer->Shutdown();
-			SafeDel(m_renderer);
+			Utils::SafeDel(m_renderer);
 		}
 	}
 

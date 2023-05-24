@@ -36,13 +36,13 @@ namespace DX11Renderer
 		if (m_app)
 		{
 			m_app->Shutdown();
-			SafeDel(m_app);
+			Utils::SafeDel(m_app);
 		}
 
 		// Release the input class object.
 		if (m_inputManager)
 		{
-			SafeDel(m_inputManager);
+			Utils::SafeDel(m_inputManager);
 		}
 
 		// Shutdown the window.
