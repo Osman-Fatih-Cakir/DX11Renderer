@@ -14,16 +14,15 @@ namespace DX11Renderer
 		screenWidth = 0;
 		screenHeight = 0;
 
-		RenderSettings rs;
-		m_fullscreen = rs.FULL_SCREEN;
-		m_renderer = new Renderer(rs);
+		m_fullscreen = false;
+		m_app = new App(m_fullscreen);
 
 		m_inputManager = new InputManager();
 		m_inputManager->Init();
 
 		InitWindows(screenWidth, screenHeight);
 
-		result = m_renderer->Init(screenWidth, screenHeight, m_hwnd);
+		result = m_app->Init(screenWidth, screenHeight, m_hwnd);
 		if (!result)
 		{
 			return false;
@@ -34,10 +33,10 @@ namespace DX11Renderer
 
 	void Main::Shutdown()
 	{
-		if (m_renderer)
+		if (m_app)
 		{
-			m_renderer->Shutdown();
-			SafeDel(m_renderer);
+			m_app->Shutdown();
+			SafeDel(m_app);
 		}
 
 		// Release the input class object.
@@ -91,7 +90,7 @@ namespace DX11Renderer
 			return false;
 		}
 
-		bool result = m_renderer->Frame();
+		bool result = m_app->Frame();
 		if (!result)
 		{
 			return false;

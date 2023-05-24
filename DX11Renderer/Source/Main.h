@@ -3,7 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
-#include "Renderer/Renderer.h"
+#include "App.h"
 #include "InputManager.h"
 
 namespace DX11Renderer
@@ -28,7 +28,7 @@ namespace DX11Renderer
 		HINSTANCE m_hInstance;
 
 		InputManager* m_inputManager = nullptr;
-		Renderer* m_renderer = nullptr;
+		App* m_app = nullptr;
 
 		bool m_fullscreen = false;
 	};

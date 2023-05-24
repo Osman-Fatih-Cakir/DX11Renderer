@@ -22,13 +22,14 @@
     <ClInclude Include="Source\InputManager.h" />
     <ClInclude Include="Source\Main.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
+    <ClInclude Include="Source\App.h" />
     <ClInclude Include="Source\Utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\EntryPoint.cpp" />
     <ClCompile Include="Source\InputManager.cpp" />
     <ClCompile Include="Source\Main.cpp" />
-    <ClCompile Include="Source\Renderer\Renderer.cpp" />
+    <ClCompile Include="Source\App.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <windows.h>
-
 namespace DX11Renderer
 {
 	struct RenderSettings
@@ -14,14 +12,6 @@ namespace DX11Renderer
 
 	class Renderer
 	{
-	public:
-		Renderer(const RenderSettings& renderSettings);
-		bool Init(int screenWidth, int screenHeight, HWND hwnd);
-		void Shutdown();
-		bool Frame();
 
-	private:
-		Renderer() {}
-		bool Render();
 	};
 }
