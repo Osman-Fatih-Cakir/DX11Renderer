@@ -1,11 +1,14 @@
 #pragma once
 
 #include <windows.h>
+#include <string>
 
 namespace DX11Renderer
 {
 	class Utils
 	{
+		friend class App; // ?!
+
 	public:
 
 		template<typename T>
@@ -22,7 +25,7 @@ namespace DX11Renderer
 			ptr = nullptr;
 		}
 
-		// This function is writing to the Output window of Visual Studio
+		// Log functions are writing to the Output window of Visual Studio
 		///////////////////////////////////////////////////
 		
 		// Logs max 128 character

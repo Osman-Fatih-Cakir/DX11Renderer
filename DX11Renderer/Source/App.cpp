@@ -1,6 +1,5 @@
 #include "App.h"
 #include "Utils/Utils.h"
-#include <iostream>
 
 namespace DX11Renderer
 {
@@ -22,6 +21,12 @@ namespace DX11Renderer
 			return false;
 		}
 
+		result = InitRenderer(hwnd);
+		if (!result)
+		{
+			return false;
+		}
+
 		m_initialized = true;
 		return true;
 	}
@@ -30,9 +35,53 @@ namespace DX11Renderer
 	{
 		if (m_initialized)
 		{
+			if (m_forwardRenderPass)
+			{
+				m_forwardRenderPass->Shutdown();
+				Utils::SafeDel(m_forwardRenderPass);
+			}
+
+			if (m_mesh)
+			{
+				m_mesh->Shutdown();
+				Utils::SafeDel(m_mesh);
+			}
+
+			if (m_camera)
+			{
+				Utils::SafeDel(m_camera);
+			}
+
 			m_renderer->Shutdown();
 			Utils::SafeDel(m_renderer);
 		}
+	}
+
+	bool App::InitRenderer(HWND hwnd)
+	{
+		bool result;
+
+		m_camera = new Camera();
+		m_camera->SetTranslation(0.0f, 0.0f, -5.0f);
+		m_camera->LookAt(0.0f, 0.0f, 0.0f);
+
+		m_mesh = new Mesh();
+		result = m_mesh->Init(m_renderer->GetDevice());
+		if (!result)
+		{
+			MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+			return false;
+		}
+
+		m_forwardRenderPass = new ForwardRenderPass();
+		result = m_forwardRenderPass->Init(m_renderer->GetDevice(), hwnd);
+		if (!result)
+		{
+			MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
+			return false;
+		}
+
+		return true;
 	}
 
 	bool App::Frame()
@@ -50,6 +99,23 @@ namespace DX11Renderer
 	{
 		// Clear buffers
 		m_renderer->BeginScene();
+
+		XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+
+		// Generate the view matrix based on the camera's position.
+		m_camera->Update();
+
+		m_renderer->GetWorldMatrix(worldMatrix);
+		m_camera->GetViewMatrix(viewMatrix);
+		m_renderer->GetProjectionMatrix(projectionMatrix);
+
+		m_mesh->SetBuffers(m_renderer->GetDeviceContext());
+
+		bool result = m_forwardRenderPass->Render(m_renderer->GetDeviceContext(), m_mesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+		if (!result)
+		{
+			return false;
+		}
 
 		// Present the rendered scene to screen
 		m_renderer->EndScene();

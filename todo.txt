@@ -1,0 +1,19 @@
+Near Tasks:
+[ ] Carry projection matrix to camera
+[ ] Carry world matrix to the mesh
+[ ] create functions for transformation operations and use them for camera and mesh
+[ ] create an mvp matrix and sent it instead of sending projection, world, view seperately
+[ ] remove transpose mvp matrices on cpu (ForwardLightingRenderPass.cpp)
+
+Next Tasks:
+[ ] finish the tutorial
+[ ] instanced rendering (grass rendering would be great)
+[ ] ambient occlusion (render to texture)
+	- I think grass rendering would benefit more from ambent occlusion than shadows.
+	but if it is not enough, go for shadows.
+	[ ] ? Shadows
+[ ] compute shaders
+	- ? wind simulation
+	- ? cloud rendering
+	- what else?
+[ ] ? terrain rendering
