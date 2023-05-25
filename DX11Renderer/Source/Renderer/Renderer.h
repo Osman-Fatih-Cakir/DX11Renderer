@@ -37,11 +37,6 @@ namespace DX11Renderer
 			return m_deviceContext;
 		}
 
-		inline void GetWorldMatrix(XMMATRIX& worldMatrix)
-		{
-			worldMatrix = m_worldMatrix;
-		}
-
 	private:
 		RenderSettings m_renderSettings;
 
@@ -55,7 +50,5 @@ namespace DX11Renderer
 		ID3D11DepthStencilState* m_depthStencilState = nullptr;
 		ID3D11DepthStencilView* m_depthStencilView = nullptr;
 		ID3D11RasterizerState* m_rasterState = nullptr;
-
-		XMMATRIX m_worldMatrix;
 	};
 }

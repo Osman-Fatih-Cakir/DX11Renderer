@@ -106,7 +106,7 @@ namespace DX11Renderer
 		// Generate the view matrix based on the camera's position.
 		m_camera->Update();
 
-		m_renderer->GetWorldMatrix(worldMatrix);
+		m_mesh->GetWorldMatrix(worldMatrix);
 		m_camera->GetViewMatrix(viewMatrix);
 		m_camera->GetProjectionMatrix(projectionMatrix);
 

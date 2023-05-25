@@ -3,6 +3,11 @@
 
 namespace DX11Renderer
 {
+	Mesh::Mesh()
+	{
+		m_worldMatrix = XMMatrixIdentity();
+	}
+
 	bool Mesh::Init(ID3D11Device* device)
 	{
 		bool result;

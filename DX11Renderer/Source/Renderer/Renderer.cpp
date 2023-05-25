@@ -303,9 +303,6 @@ namespace DX11Renderer
 		// Create the viewport.
 		m_deviceContext->RSSetViewports(1, &viewport);
 
-		// Initialize the world matrix to the identity matrix.
-		m_worldMatrix = XMMatrixIdentity();
-
 		return true;
 	}
 

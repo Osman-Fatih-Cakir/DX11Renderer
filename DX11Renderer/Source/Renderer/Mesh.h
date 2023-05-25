@@ -9,6 +9,7 @@ namespace DX11Renderer
 	class Mesh
 	{
 	public:
+		Mesh();
 		bool Init(ID3D11Device* device);
 		void Shutdown();
 		void SetBuffers(ID3D11DeviceContext* deviceContext);
@@ -16,6 +17,11 @@ namespace DX11Renderer
 		inline int GetIndexCount()
 		{
 			return m_indexCount;
+		}
+
+		inline void GetWorldMatrix(XMMATRIX& worldMatrix)
+		{
+			worldMatrix = m_worldMatrix;
 		}
 
 	private:
@@ -32,5 +38,7 @@ namespace DX11Renderer
 		ID3D11Buffer* m_indexBuffer = nullptr;
 		int m_vertexCount = 0;
 		int m_indexCount = 0;
+
+		XMMATRIX m_worldMatrix;
 	};
 }
