@@ -30,8 +30,8 @@ namespace DX11Renderer
 		}
 
 	private:
-		XMFLOAT3 m_position; // Keep the last variable 0
-		XMFLOAT3 m_focusPos; // Keep the last variable 0
+		XMFLOAT3 m_position;
+		XMFLOAT3 m_focusPos;
 		XMMATRIX m_projectionMatrix;
 		XMMATRIX m_viewMatrix;
 
