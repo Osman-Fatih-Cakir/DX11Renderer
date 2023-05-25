@@ -14,8 +14,6 @@ namespace DX11Renderer
 	{
 		bool FULL_SCREEN = false;
 		bool VSYNC_ENABLED = true;
-		float SCREEN_FAR = 1000.0f;
-		float SCREEN_NEAR = 0.3f;
 	};
 
 	class Renderer
@@ -39,11 +37,6 @@ namespace DX11Renderer
 			return m_deviceContext;
 		}
 
-		inline void GetProjectionMatrix(XMMATRIX& projectionMatrix)
-		{
-			projectionMatrix = m_projectionMatrix;
-		}
-
 		inline void GetWorldMatrix(XMMATRIX& worldMatrix)
 		{
 			worldMatrix = m_worldMatrix;
@@ -63,7 +56,6 @@ namespace DX11Renderer
 		ID3D11DepthStencilView* m_depthStencilView = nullptr;
 		ID3D11RasterizerState* m_rasterState = nullptr;
 
-		XMMATRIX m_projectionMatrix;
 		XMMATRIX m_worldMatrix;
 	};
 }

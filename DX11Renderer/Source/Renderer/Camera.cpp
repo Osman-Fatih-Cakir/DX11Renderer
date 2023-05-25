@@ -2,6 +2,11 @@
 
 namespace DX11Renderer
 {
+	void Camera::Init(float fovY, float aspectRatio, float near, float far)
+	{
+		m_projectionMatrix = XMMatrixPerspectiveFovLH(fovY, aspectRatio, near, far);
+	}
+
 	void Camera::Update()
 	{
 		if (!m_needUpdate)

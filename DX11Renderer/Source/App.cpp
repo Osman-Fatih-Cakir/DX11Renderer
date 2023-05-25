@@ -21,7 +21,7 @@ namespace DX11Renderer
 			return false;
 		}
 
-		result = InitRenderer(hwnd);
+		result = InitRenderer(hwnd, screenWidth, screenHeight);
 		if (!result)
 		{
 			return false;
@@ -57,11 +57,12 @@ namespace DX11Renderer
 		}
 	}
 
-	bool App::InitRenderer(HWND hwnd)
+	bool App::InitRenderer(HWND hwnd, int screenWidth, int screenHeight)
 	{
 		bool result;
 
 		m_camera = new Camera();
+		m_camera->Init(PI / 4.0f, (float)screenWidth / screenHeight, 0.3f, 1000.0f);
 		m_camera->SetTranslation(0.0f, 0.0f, -5.0f);
 		m_camera->LookAt(0.0f, 0.0f, 0.0f);
 
@@ -107,7 +108,7 @@ namespace DX11Renderer
 
 		m_renderer->GetWorldMatrix(worldMatrix);
 		m_camera->GetViewMatrix(viewMatrix);
-		m_renderer->GetProjectionMatrix(projectionMatrix);
+		m_camera->GetProjectionMatrix(projectionMatrix);
 
 		m_mesh->SetBuffers(m_renderer->GetDeviceContext());
 

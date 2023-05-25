@@ -3,6 +3,8 @@
 #include <windows.h>
 #include <string>
 
+# define PI 3.14159265358979323846f
+
 namespace DX11Renderer
 {
 	class Utils

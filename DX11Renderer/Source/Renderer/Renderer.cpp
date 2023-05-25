@@ -21,7 +21,6 @@ namespace DX11Renderer
 		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 		D3D11_RASTERIZER_DESC rasterDesc;
 		D3D11_VIEWPORT viewport;
-		float fieldOfView, screenAspect;
 
 		m_renderSettings = renderSettings;
 
@@ -303,13 +302,6 @@ namespace DX11Renderer
 
 		// Create the viewport.
 		m_deviceContext->RSSetViewports(1, &viewport);
-
-		// Setup the projection matrix.
-		fieldOfView = 3.141592654f / 4.0f;
-		screenAspect = (float)screenWidth / (float)screenHeight;
-
-		// Create the projection matrix for 3D rendering.
-		m_projectionMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, m_renderSettings.SCREEN_NEAR, m_renderSettings.SCREEN_FAR);
 
 		// Initialize the world matrix to the identity matrix.
 		m_worldMatrix = XMMatrixIdentity();

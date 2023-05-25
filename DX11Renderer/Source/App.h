@@ -17,7 +17,7 @@ namespace DX11Renderer
 
 	private:
 		bool Render();
-		bool InitRenderer(HWND hwnd);
+		bool InitRenderer(HWND hwnd, int screenWidth, int screenHeight);
 		
 	private:
 		Renderer* m_renderer = nullptr;
