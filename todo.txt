@@ -4,8 +4,9 @@ Near Tasks:
 [ ] create an mvp matrix and sent it instead of sending projection, world, view seperately
 [ ] remove transpose mvp matrices on cpu (ForwardLightingRenderPass.cpp)
 
-Next Tasks:
-[ ] finish the tutorial
+Next Tasks: (all tasks are 1 day tasks)
+[+] finish the tutorial
+[ ] finish "Near Tasks"
 [ ] instanced rendering (grass rendering would be great)
 [ ] ambient occlusion (render to texture)
 	- I think grass rendering would benefit more from ambent occlusion than shadows.
