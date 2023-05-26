@@ -27,34 +27,30 @@ namespace DX11Renderer
 			return false;
 		}
 
-		m_initialized = true;
 		return true;
 	}
 
 	void App::Shutdown()
 	{
-		if (m_initialized)
+		if (m_forwardRenderPass)
 		{
-			if (m_forwardRenderPass)
-			{
-				m_forwardRenderPass->Shutdown();
-				Utils::SafeDel(m_forwardRenderPass);
-			}
-
-			if (m_mesh)
-			{
-				m_mesh->Shutdown();
-				Utils::SafeDel(m_mesh);
-			}
-
-			if (m_camera)
-			{
-				Utils::SafeDel(m_camera);
-			}
-
-			m_renderer->Shutdown();
-			Utils::SafeDel(m_renderer);
+			m_forwardRenderPass->Shutdown();
+			Utils::SafeDel(m_forwardRenderPass);
 		}
+
+		if (m_mesh)
+		{
+			m_mesh->Shutdown();
+			Utils::SafeDel(m_mesh);
+		}
+
+		if (m_camera)
+		{
+			Utils::SafeDel(m_camera);
+		}
+
+		m_renderer->Shutdown();
+		Utils::SafeDel(m_renderer);
 	}
 
 	bool App::InitRenderer(HWND hwnd, int screenWidth, int screenHeight)
@@ -67,7 +63,7 @@ namespace DX11Renderer
 		m_camera->LookAt(0.0f, 0.0f, 0.0f);
 
 		m_mesh = new Mesh();
-		result = m_mesh->Init(m_renderer->GetDevice());
+		result = m_mesh->Init(m_renderer->GetDevice(), m_renderer->GetDeviceContext(), "..\\..\\DX11Renderer\\Resources\\Textures\\stone01.tga");
 		if (!result)
 		{
 			MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -112,7 +108,7 @@ namespace DX11Renderer
 
 		m_mesh->SetBuffers(m_renderer->GetDeviceContext());
 
-		bool result = m_forwardRenderPass->Render(m_renderer->GetDeviceContext(), m_mesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+		bool result = m_forwardRenderPass->Render(m_renderer->GetDeviceContext(), m_mesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_mesh->GetTexture()->GetTextureView());
 		if (!result)
 		{
 			return false;

@@ -22,7 +22,6 @@ namespace DX11Renderer
 	private:
 		Renderer* m_renderer = nullptr;
 
-		bool m_initialized = false;
 		bool m_fullscreen = false;
 
 		Camera* m_camera = nullptr;

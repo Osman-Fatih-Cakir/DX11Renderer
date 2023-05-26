@@ -9,13 +9,13 @@ cbuffer MatrixBuffer
 struct VertexInputType
 {
   float4 position : POSITION;
-  float4 color : COLOR;
+  float2 texCoord : TEXCOORD0;
 };
 
 struct PixelInputType
 {
   float4 position : SV_POSITION;
-  float4 color : COLOR;
+  float2 texCoord : TEXCOORD0;
 };
 
 PixelInputType Main(VertexInputType input)
@@ -26,7 +26,7 @@ PixelInputType Main(VertexInputType input)
 
   output.position = mul(mul(mul(input.position, worldMatrix), viewMatrix), projectionMatrix); // TODO create a mvp matrix on cpu
 
-  output.color = input.color;
+  output.texCoord = input.texCoord;
 
   return output;
 }

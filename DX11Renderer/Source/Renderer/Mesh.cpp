@@ -8,7 +8,7 @@ namespace DX11Renderer
 		m_worldMatrix = XMMatrixIdentity();
 	}
 
-	bool Mesh::Init(ID3D11Device* device)
+	bool Mesh::Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* textureFilename)
 	{
 		bool result;
 
@@ -19,22 +19,19 @@ namespace DX11Renderer
 			return false;
 		}
 
+		result = LoadTexture(device, deviceContext, textureFilename);
+		if (!result)
+		{
+			return false;
+		}
+
 		return true;
 	}
 
 	void Mesh::Shutdown()
 	{
-		if (m_indexBuffer)
-		{
-			m_indexBuffer->Release();
-			m_indexBuffer = nullptr;
-		}
-
-		if (m_vertexBuffer)
-		{
-			m_vertexBuffer->Release();
-			m_vertexBuffer = nullptr;
-		}
+		ReleaseTexture();
+		ShutdownBuffers();
 	}
 
 	void Mesh::SetBuffers(ID3D11DeviceContext* deviceContext)
@@ -51,6 +48,20 @@ namespace DX11Renderer
 
 		// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	}
+
+	bool Mesh::LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filename)
+	{
+		// Create and initialize the texture object.
+		m_texture = new Texture();
+
+		bool result = m_texture->Init(device, deviceContext, filename);
+		if (!result)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	bool Mesh::InitBuffers(ID3D11Device* device)
@@ -76,13 +87,13 @@ namespace DX11Renderer
 		}
 
 		vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-		vertices[0].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+		vertices[0].texCoord = XMFLOAT2(0.0f, 1.0f);
 
 		vertices[1].position = XMFLOAT3(0.0f, 1.0f, 0.0f);  // Top middle.
-		vertices[1].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+		vertices[1].texCoord = XMFLOAT2(0.5f, 0.0f);
 
 		vertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.0f);  // Bottom right.
-		vertices[2].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+		vertices[2].texCoord = XMFLOAT2(1.0f, 1.0f);
 
 		indices[0] = 0;  // Bottom left.
 		indices[1] = 1;  // Top middle.
@@ -137,5 +148,29 @@ namespace DX11Renderer
 		Utils::SafeDel(indices);
 
 		return true;
+	}
+
+	void Mesh::ReleaseTexture()
+	{
+		if (m_texture)
+		{
+			m_texture->Shutdown();
+			Utils::SafeDel(m_texture);
+		}
+	}
+
+	void Mesh::ShutdownBuffers()
+	{
+		if (m_indexBuffer)
+		{
+			m_indexBuffer->Release();
+			m_indexBuffer = nullptr;
+		}
+
+		if (m_vertexBuffer)
+		{
+			m_vertexBuffer->Release();
+			m_vertexBuffer = nullptr;
+		}
 	}
 }
