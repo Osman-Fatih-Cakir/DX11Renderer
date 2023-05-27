@@ -9,8 +9,8 @@ namespace DX11Renderer
 		friend class Main;
 
 	public:
-		void Init();
-		void LateUpdate();
+		void Init(int centerX, int centerY);
+		void Update();
 
 		inline bool KeyDown(Key key)
 		{
@@ -19,30 +19,12 @@ namespace DX11Renderer
 
 		inline int DeltaMouseX()
 		{
-			if (m_firstDelta && m_mouseX != 0)
-			{
-				m_firstDelta = false;
-				m_lastMouseX = m_mouseX;
-				return 0;
-			}
-			else
-			{
-				return m_mouseX - m_lastMouseX;
-			}
+			return m_deltaMouseX;
 		}
 
 		inline int DeltaMouseY()
 		{
-			if (m_firstDelta && m_mouseY != 0)
-			{
-				m_firstDelta = false;
-				m_lastMouseY = m_mouseY;
-				return 0;
-			}
-			else
-			{
-				return m_mouseY - m_lastMouseY;
-			}
+			return m_deltaMouseY;
 		}
 
 	private:
@@ -59,11 +41,13 @@ namespace DX11Renderer
 	private:
 		int m_mouseX = 0;
 		int m_mouseY = 0;
-		int m_lastMouseX = 0;
-		int m_lastMouseY = 0;
+
+		int m_centerMouseX = 0;
+		int m_centerMouseY = 0;
+
+		int m_deltaMouseX = 0;
+		int m_deltaMouseY = 0;
 
 		bool m_keys[256];
-
-		bool m_firstDelta = true; // TODO fix this
 	};
 }

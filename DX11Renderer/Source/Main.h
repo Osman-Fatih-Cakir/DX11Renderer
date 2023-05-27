@@ -1,7 +1,6 @@
 #pragma once
 
 #define WIN32_LEAN_AND_MEAN
-
 #include <windows.h>
 #include "App.h"
 #include "InputManager.h"
@@ -30,6 +29,8 @@ namespace DX11Renderer
 		App* m_app = nullptr;
 
 		bool m_fullscreen = false;
+		int m_posX = 0;
+		int m_posY = 0;
 	};
 
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);

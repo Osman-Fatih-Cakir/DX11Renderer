@@ -10,7 +10,6 @@ namespace DX11Renderer
 	public:
 		void Init(float fovY, float aspectRatio, float near, float far);
 		void Update();
-		void LookAt(const XMFLOAT3& pos, const XMFLOAT3& focus);
 
 		inline const XMFLOAT3 GetPosition()
 		{
@@ -28,9 +27,18 @@ namespace DX11Renderer
 		}
 
 	private:
+		void LookAt(const XMFLOAT3& pos, const XMFLOAT3& focus);
+
+	private:
 		XMFLOAT3 m_position;
-		XMFLOAT3 m_focusPos;
 		XMMATRIX m_projectionMatrix;
 		XMMATRIX m_viewMatrix;
+
+		float m_yaw = -90.0f;
+		float m_pitch = 0.0f;
+		XMVECTOR m_front;
+		XMVECTOR m_right;
+		XMVECTOR m_up;
+		static constexpr XMVECTOR m_worldUp = { 0.0f, 1.0f, 0.0f, 0.0f };
 	};
 }

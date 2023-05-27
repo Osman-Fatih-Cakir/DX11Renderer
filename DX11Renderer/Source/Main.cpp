@@ -1,5 +1,6 @@
 #include "Main.h"
 #include "windowsx.h"
+#include <chrono>
 #include "Utils/Utils.h"
 #include "Globals.h"
 #include "Keys.h"
@@ -20,10 +21,13 @@ namespace DX11Renderer
 		m_fullscreen = false;
 		m_app = new App(m_fullscreen);
 
-		g_inputManager = new InputManager();
-		g_inputManager->Init();
-
 		InitWindows(screenWidth, screenHeight);
+
+		// Get the middle of the window
+		RECT rect;
+		GetWindowRect(m_hwnd, &rect);
+		g_inputManager = new InputManager();
+		g_inputManager->Init((rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2);
 
 		result = m_app->Init(screenWidth, screenHeight, m_hwnd);
 		if (!result)
@@ -63,6 +67,13 @@ namespace DX11Renderer
 		bool done = false;
 		while (!done)
 		{
+#if 0 // Log frame duration
+			static auto t_start = std::chrono::high_resolution_clock::now();
+			const auto t_end = std::chrono::high_resolution_clock::now();
+			double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
+			t_start = t_end;
+			Utils::Log((int)elapsed_time_ms);
+#endif
 			// Handle the windows messages.
 			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 			{
@@ -94,13 +105,12 @@ namespace DX11Renderer
 			return false;
 		}
 
+		g_inputManager->Update();
 		bool result = m_app->Frame();
 		if (!result)
 		{
 			return false;
 		}
-
-		g_inputManager->LateUpdate();
 
 		return true;
 	}
@@ -121,8 +131,9 @@ namespace DX11Renderer
 		}
 		case WM_MOUSEMOVE:
 		{
-			g_inputManager->m_mouseX = GET_X_LPARAM(lparam);
-			g_inputManager->m_mouseY = GET_Y_LPARAM(lparam);
+			g_inputManager->m_mouseX = GET_X_LPARAM(lparam) + m_posX;
+			g_inputManager->m_mouseY = GET_Y_LPARAM(lparam) + m_posY;
+			
 			break;
 		}
 		case WM_LBUTTONDOWN:
@@ -173,7 +184,6 @@ namespace DX11Renderer
 
 		// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
 		DEVMODE dmScreenSettings;
-		int posX, posY;
 		if (m_fullscreen)
 		{
 			// If full screen set the screen to maximum size of the users desktop and 32bit.
@@ -188,7 +198,7 @@ namespace DX11Renderer
 			ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
 
 			// Set the position of the window to the top left corner.
-			posX = posY = 0;
+			m_posX = m_posY = 0;
 		}
 		else
 		{
@@ -197,14 +207,14 @@ namespace DX11Renderer
 			screenHeight = 720;
 
 			// Place the window in the middle of the screen.
-			posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
-			posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
+			m_posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
+			m_posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
 		}
 
 		// Create the window with the screen settings and get the handle to it.
 		m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_applicationName, m_applicationName,
 			WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
-			posX, posY, screenWidth, screenHeight, NULL, NULL, m_hInstance, NULL);
+			m_posX, m_posY, screenWidth, screenHeight, NULL, NULL, m_hInstance, NULL);
 
 		// Bring the window up on the screen and set it as main focus.
 		ShowWindow(m_hwnd, SW_SHOW);

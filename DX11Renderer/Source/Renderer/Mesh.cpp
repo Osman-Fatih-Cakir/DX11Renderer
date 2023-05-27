@@ -86,14 +86,21 @@ namespace DX11Renderer
 			return false;
 		}
 
-		vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-		vertices[0].texCoord = XMFLOAT2(0.0f, 1.0f);
+		vertices[0].position = XMFLOAT3(1.0f, -1.0f, 0.0f);  // Bottom right.
+		vertices[0].texCoord = XMFLOAT2(1.0f, 0.0f);
 
 		vertices[1].position = XMFLOAT3(0.0f, 1.0f, 0.0f);  // Top middle.
-		vertices[1].texCoord = XMFLOAT2(0.5f, 0.0f);
+		vertices[1].texCoord = XMFLOAT2(0.5f, 1.0f);
 
-		vertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.0f);  // Bottom right.
-		vertices[2].texCoord = XMFLOAT2(1.0f, 1.0f);
+		vertices[2].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
+		vertices[2].texCoord = XMFLOAT2(0.0f, 0.0f);
+
+		// TODO remove
+		for (int i = 0; i < 3; ++i)
+		{
+			vertices[i].position.z += -5.0f;
+		}
+		//
 
 		indices[0] = 0;  // Bottom left.
 		indices[1] = 1;  // Top middle.
