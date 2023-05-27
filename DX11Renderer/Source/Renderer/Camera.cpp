@@ -14,15 +14,18 @@ namespace DX11Renderer
 
 	void Camera::Update()
 	{
+		const float multiplier = 0.1f;
+
 		// TODO get deltaTime as argument
 		int deltaX = g_inputManager->DeltaMouseX();
 		int deltaY = g_inputManager->DeltaMouseY();
 
 		static XMMATRIX rotMat = XMMatrixInverse(nullptr, m_viewMatrix);
 
-		if (deltaY != 0)
+		if (deltaY != 0 || deltaX != 0)
 		{
-			const float multiplier = 0.1f;
+			// Calculate rotation
+
 			m_yaw -= deltaX * multiplier;
 			m_pitch -= deltaY * multiplier;
 
@@ -37,9 +40,31 @@ namespace DX11Renderer
 			m_front = XMVector3Normalize({ cosf(radianYaw) * cosf(radianPitch), sinf(radianPitch), sinf(radianYaw) * cosf(radianPitch) });
 			m_right = XMVector3Normalize(XMVector3Cross(m_front, m_worldUp));
 			m_up = XMVector3Normalize(XMVector3Cross(m_right, m_front));
-
-			m_viewMatrix = XMMatrixLookAtLH(XMLoadFloat3(&m_position), XMVectorAdd(XMLoadFloat3(&m_position), m_front), m_up);
 		}
+
+		// Calculate translation
+
+		XMVECTOR pos = XMLoadFloat3(&m_position);
+		if (g_inputManager->KeyDown(Key::W))
+		{
+			pos += m_front * multiplier;
+		}
+		if (g_inputManager->KeyDown(Key::S))
+		{
+			pos -= m_front * multiplier;
+		}
+		if (g_inputManager->KeyDown(Key::A))
+		{
+			pos += m_right * multiplier;
+		}
+		if (g_inputManager->KeyDown(Key::D))
+		{
+			pos -= m_right * multiplier;
+		}
+		XMStoreFloat3(&m_position, pos);
+
+		// Calculate view matrix
+		m_viewMatrix = XMMatrixLookAtLH(pos, XMVectorAdd(pos, m_front), m_up);
 	}
 
 	void Camera::LookAt(const XMFLOAT3& pos, const XMFLOAT3& focus)

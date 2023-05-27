@@ -36,9 +36,9 @@ namespace DX11Renderer
 
 		float m_yaw = -90.0f;
 		float m_pitch = 0.0f;
-		XMVECTOR m_front;
-		XMVECTOR m_right;
-		XMVECTOR m_up;
+		XMVECTOR m_front = { 0.0f, 0.0f, -1.0f, 0.0f };
+		XMVECTOR m_right = { 1.0f, 0.0f, 0.0f, 0.0f };
 		static constexpr XMVECTOR m_worldUp = { 0.0f, 1.0f, 0.0f, 0.0f };
+		XMVECTOR m_up = m_worldUp;
 	};
 }

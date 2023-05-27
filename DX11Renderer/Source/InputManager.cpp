@@ -27,6 +27,8 @@ namespace DX11Renderer
 		m_mouseX = m_centerMouseX;
 		m_mouseY = m_centerMouseY;
 
+#if 1 // debugging reason
 		SetCursorPos(m_centerMouseX, m_centerMouseY);
+#endif
 	}
 }
