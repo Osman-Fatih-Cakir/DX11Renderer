@@ -10,9 +10,7 @@ namespace DX11Renderer
 	public:
 		void Init(float fovY, float aspectRatio, float near, float far);
 		void Update();
-		void Translate(float x, float y, float z);
-		void SetTranslation(float x, float y, float z);
-		void LookAt(float x, float y, float z);
+		void LookAt(const XMFLOAT3& pos, const XMFLOAT3& focus);
 
 		inline const XMFLOAT3 GetPosition()
 		{
@@ -34,7 +32,5 @@ namespace DX11Renderer
 		XMFLOAT3 m_focusPos;
 		XMMATRIX m_projectionMatrix;
 		XMMATRIX m_viewMatrix;
-
-		bool m_needUpdate = true;
 	};
 }

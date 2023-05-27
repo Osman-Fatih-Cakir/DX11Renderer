@@ -19,7 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Globals.h" />
     <ClInclude Include="Source\InputManager.h" />
+    <ClInclude Include="Source\Keys.h" />
     <ClInclude Include="Source\Main.h" />
     <ClInclude Include="Source\Renderer\Camera.h" />
     <ClInclude Include="Source\Renderer\ForwardRenderPass.h" />

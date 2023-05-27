@@ -59,8 +59,7 @@ namespace DX11Renderer
 
 		m_camera = new Camera();
 		m_camera->Init(PI / 4.0f, (float)screenWidth / screenHeight, 0.3f, 1000.0f);
-		m_camera->SetTranslation(0.0f, 0.0f, -5.0f);
-		m_camera->LookAt(0.0f, 0.0f, 0.0f);
+		m_camera->LookAt({ 0.0f, 0.0f, -5.0f }, { 0.0f, 0.0f, 0.0f });
 
 		m_mesh = new Mesh();
 		result = m_mesh->Init(m_renderer->GetDevice(), m_renderer->GetDeviceContext(), "..\\..\\DX11Renderer\\Resources\\Textures\\stone01.tga");

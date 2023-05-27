@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Keys.h"
+
 namespace DX11Renderer
 {
 	class InputManager
@@ -9,7 +11,7 @@ namespace DX11Renderer
 	public:
 		void Init();
 
-		bool KeyDown(unsigned int key);
+		bool KeyDown(Key key);
 
 	private:
 		void SetKeyDown(unsigned int key);

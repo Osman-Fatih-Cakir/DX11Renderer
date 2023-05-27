@@ -1,5 +1,7 @@
 #include "Main.h"
 #include "Utils/Utils.h"
+#include "Globals.h"
+#include "Keys.h"
 
 namespace DX11Renderer
 {
@@ -17,8 +19,8 @@ namespace DX11Renderer
 		m_fullscreen = false;
 		m_app = new App(m_fullscreen);
 
-		m_inputManager = new InputManager();
-		m_inputManager->Init();
+		g_inputManager = new InputManager();
+		g_inputManager->Init();
 
 		InitWindows(screenWidth, screenHeight);
 
@@ -40,9 +42,9 @@ namespace DX11Renderer
 		}
 
 		// Release the input class object.
-		if (m_inputManager)
+		if (g_inputManager)
 		{
-			Utils::SafeDel(m_inputManager);
+			Utils::SafeDel(g_inputManager);
 		}
 
 		// Shutdown the window.
@@ -85,7 +87,7 @@ namespace DX11Renderer
 
 	bool Main::Frame()
 	{
-		if (m_inputManager->KeyDown(VK_ESCAPE))
+		if (g_inputManager->KeyDown(Key::Escape))
 		{
 			return false;
 		}
@@ -105,13 +107,13 @@ namespace DX11Renderer
 		{
 		case WM_KEYDOWN:
 		{
-			m_inputManager->SetKeyDown((unsigned int)wparam);
+			g_inputManager->SetKeyDown((unsigned int)wparam);
 			return 0;
 		}
 
 		case WM_KEYUP:
 		{
-			m_inputManager->SetKeyUp((unsigned int)wparam);
+			g_inputManager->SetKeyUp((unsigned int)wparam);
 			return 0;
 		}
 

@@ -22,9 +22,6 @@ namespace DX11Renderer
 		void InitWindows(int& screenWidth, int& screenHeight);
 		void ShutdownWindows();
 
-	public:
-		InputManager* m_inputManager = nullptr;
-
 	private:
 		LPCWSTR m_applicationName = L"DX11Renderer";
 		HWND m_hwnd;

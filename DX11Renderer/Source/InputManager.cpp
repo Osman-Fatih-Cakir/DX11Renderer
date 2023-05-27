@@ -23,8 +23,8 @@ namespace DX11Renderer
 	}
 
 
-	bool InputManager::KeyDown(unsigned int key)
+	bool InputManager::KeyDown(Key key)
 	{
-		return m_keys[key];
+		return m_keys[(unsigned int)key];
 	}
 }
