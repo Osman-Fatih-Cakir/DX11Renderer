@@ -19,12 +19,30 @@ namespace DX11Renderer
 
 		inline int DeltaMouseX()
 		{
-			return m_mouseX - m_lastMouseX;
+			if (m_firstDelta && m_mouseX != 0)
+			{
+				m_firstDelta = false;
+				m_lastMouseX = m_mouseX;
+				return 0;
+			}
+			else
+			{
+				return m_mouseX - m_lastMouseX;
+			}
 		}
 
 		inline int DeltaMouseY()
 		{
-			return m_mouseX - m_lastMouseX;
+			if (m_firstDelta && m_mouseY != 0)
+			{
+				m_firstDelta = false;
+				m_lastMouseY = m_mouseY;
+				return 0;
+			}
+			else
+			{
+				return m_mouseY - m_lastMouseY;
+			}
 		}
 
 	private:
@@ -45,5 +63,7 @@ namespace DX11Renderer
 		int m_lastMouseY = 0;
 
 		bool m_keys[256];
+
+		bool m_firstDelta = true; // TODO fix this
 	};
 }
