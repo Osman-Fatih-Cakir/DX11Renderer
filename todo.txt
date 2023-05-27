@@ -1,5 +1,4 @@
 Near Tasks:
-[ ] free camera
 [ ] create functions for transformation operations and use them for camera and mesh
 [ ] create an mvp matrix and sent it instead of sending projection, world, view seperately
 [ ] remove transpose mvp matrices on cpu (ForwardLightingRenderPass.cpp)
