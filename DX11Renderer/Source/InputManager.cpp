@@ -10,21 +10,9 @@ namespace DX11Renderer
 		}
 	}
 
-
-	void InputManager::SetKeyDown(unsigned int input)
+	void InputManager::LateUpdate()
 	{
-		m_keys[input] = true;
-	}
-
-
-	void InputManager::SetKeyUp(unsigned int input)
-	{
-		m_keys[input] = false;
-	}
-
-
-	bool InputManager::KeyDown(Key key)
-	{
-		return m_keys[(unsigned int)key];
+		m_lastMouseX = m_mouseX;
+		m_lastMouseY = m_mouseY;
 	}
 }

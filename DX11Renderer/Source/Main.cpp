@@ -1,4 +1,5 @@
 #include "Main.h"
+#include "windowsx.h"
 #include "Utils/Utils.h"
 #include "Globals.h"
 #include "Keys.h"
@@ -87,6 +88,7 @@ namespace DX11Renderer
 
 	bool Main::Frame()
 	{
+
 		if (g_inputManager->KeyDown(Key::Escape))
 		{
 			return false;
@@ -98,6 +100,8 @@ namespace DX11Renderer
 			return false;
 		}
 
+		g_inputManager->LateUpdate();
+
 		return true;
 	}
 
@@ -108,20 +112,36 @@ namespace DX11Renderer
 		case WM_KEYDOWN:
 		{
 			g_inputManager->SetKeyDown((unsigned int)wparam);
-			return 0;
+			break;
 		}
-
 		case WM_KEYUP:
 		{
 			g_inputManager->SetKeyUp((unsigned int)wparam);
-			return 0;
+			break;
 		}
-
+		case WM_MOUSEMOVE:
+		{
+			g_inputManager->m_mouseX = GET_X_LPARAM(lparam);
+			g_inputManager->m_mouseY = GET_Y_LPARAM(lparam);
+			break;
+		}
+		case WM_LBUTTONDOWN:
+		{
+			// left mouse click
+			break;
+		}
+		case WM_RBUTTONDOWN:
+		{
+			// right mouse click
+			break;
+		}
 		default:
 		{
 			return DefWindowProc(hwnd, umsg, wparam, lparam);
 		}
 		}
+
+		return 0;
 	}
 
 	void Main::InitWindows(int& screenWidth, int& screenHeight)

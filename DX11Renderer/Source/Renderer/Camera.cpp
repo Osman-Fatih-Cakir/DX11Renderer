@@ -5,17 +5,14 @@
 
 namespace DX11Renderer
 {
-	void Camera::Init(float fovY, float aspectRatio, float near, float far)
+	void Camera::Init(float fovY, float aspectRatio, float _near, float _far)
 	{
-		m_projectionMatrix = XMMatrixPerspectiveFovLH(fovY, aspectRatio, near, far);
+		m_projectionMatrix = XMMatrixPerspectiveFovLH(fovY, aspectRatio, _near, _far);
 	}
 
 	void Camera::Update()
 	{
-		if (g_inputManager->KeyDown(Key::W))
-		{
-			int y = 5;
-		}
+		
 	}
 
 	void Camera::LookAt(const XMFLOAT3& pos, const XMFLOAT3& focus)
