@@ -73,6 +73,7 @@ namespace DX11Renderer
 		struct GrassVertex
 		{
 			XMFLOAT3 position;
+			XMFLOAT4 color;
 		};
 
 		bool InitBuffers(ID3D11Device* device) override;

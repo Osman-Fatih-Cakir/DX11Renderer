@@ -225,6 +225,12 @@ namespace DX11Renderer
 		vertices[3].position = XMFLOAT3( 0.05f,	-0.05f, -0.05f);  // back bottom left
 		vertices[4].position = XMFLOAT3(-0.05f,	-0.05f, -0.05f);  // back bottom right
 
+		vertices[0].color =	XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+		vertices[1].color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+		vertices[2].color = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
+		vertices[3].color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+		vertices[4].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+
 		// TODO remove
 		for (int i = 0; i < 5; ++i)
 		{
