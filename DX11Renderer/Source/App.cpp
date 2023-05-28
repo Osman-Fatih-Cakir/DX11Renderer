@@ -38,10 +38,16 @@ namespace DX11Renderer
 			Utils::SafeDel(m_forwardRenderPass);
 		}
 
-		if (m_mesh)
+		if (m_grassRenderPass)
 		{
-			m_mesh->Shutdown();
-			Utils::SafeDel(m_mesh);
+			m_grassRenderPass->Shutdown();
+			Utils::SafeDel(m_grassRenderPass);
+		}
+
+		if (m_grassMesh)
+		{
+			m_grassMesh->Shutdown();
+			Utils::SafeDel(m_grassMesh);
 		}
 
 		if (m_camera)
@@ -60,8 +66,8 @@ namespace DX11Renderer
 		m_camera = new Camera();
 		m_camera->Init(PI / 4.0f, (float)screenWidth / screenHeight, 0.3f, 1000.0f);
 
-		m_mesh = new Mesh();
-		result = m_mesh->Init(m_renderer->GetDevice(), m_renderer->GetDeviceContext(), "..\\..\\DX11Renderer\\Resources\\Textures\\stone01.tga");
+		m_grassMesh = new GrassMesh();
+		result = m_grassMesh->Init(m_renderer->GetDevice(), m_renderer->GetDeviceContext(), "..\\..\\DX11Renderer\\Resources\\Textures\\stone01.tga");
 		if (!result)
 		{
 			MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -72,7 +78,15 @@ namespace DX11Renderer
 		result = m_forwardRenderPass->Init(m_renderer->GetDevice(), hwnd);
 		if (!result)
 		{
-			MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
+			MessageBox(hwnd, L"Could not initialize the forward render pass.", L"Error", MB_OK);
+			return false;
+		}
+
+		m_grassRenderPass = new GrassRenderPass();
+		result = m_grassRenderPass->Init(m_renderer->GetDevice(), hwnd);
+		if (!result)
+		{
+			MessageBox(hwnd, L"Could not initialize the grass render pass.", L"Error", MB_OK);
 			return false;
 		}
 
@@ -100,13 +114,13 @@ namespace DX11Renderer
 		// Generate the view matrix based on the camera's position.
 		m_camera->Update();
 
-		m_mesh->GetWorldMatrix(worldMatrix);
+		m_grassMesh->GetWorldMatrix(worldMatrix);
 		m_camera->GetViewMatrix(viewMatrix);
 		m_camera->GetProjectionMatrix(projectionMatrix);
 
-		m_mesh->SetBuffers(m_renderer->GetDeviceContext());
+		m_grassMesh->SetBuffers(m_renderer->GetDeviceContext());
 
-		bool result = m_forwardRenderPass->Render(m_renderer->GetDeviceContext(), m_mesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_mesh->GetTexture()->GetTextureView());
+		bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 		if (!result)
 		{
 			return false;

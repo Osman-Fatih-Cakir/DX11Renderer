@@ -11,9 +11,10 @@ namespace DX11Renderer
 	{
 	public:
 		Mesh();
+		virtual ~Mesh() { }
 		bool Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* textureFilename);
 		void Shutdown();
-		void SetBuffers(ID3D11DeviceContext* deviceContext);
+		virtual void SetBuffers(ID3D11DeviceContext* deviceContext);
 
 		inline int GetIndexCount()
 		{
@@ -25,18 +26,18 @@ namespace DX11Renderer
 			worldMatrix = m_worldMatrix;
 		}
 
-		inline Texture* GetTexture()
+		inline virtual Texture* GetTexture()
 		{
 			return m_texture;
 		}
 
-	private:
-		bool LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filename);
-		bool InitBuffers(ID3D11Device* device);
-		void ReleaseTexture();
+	protected:
+		virtual bool LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filename);
+		virtual bool InitBuffers(ID3D11Device* device);
+		virtual void ReleaseTexture();
 		void ShutdownBuffers();
 
-	private:
+	protected:
 		struct Vertex
 		{
 			XMFLOAT3 position;
@@ -51,5 +52,31 @@ namespace DX11Renderer
 		XMMATRIX m_worldMatrix;
 
 		Texture* m_texture = nullptr; // Material would be better, but no time to that :)
+	};
+
+	class GrassMesh final : public Mesh
+	{
+	public:
+		GrassMesh() { }
+		virtual ~GrassMesh() { }
+
+		void SetBuffers(ID3D11DeviceContext* deviceContext) override;
+
+		inline Texture* GetTexture() override
+		{
+			assert("No texture for grass!" && false);
+			return nullptr;
+		}
+
+	protected:
+
+		struct GrassVertex
+		{
+			XMFLOAT3 position;
+		};
+
+		bool InitBuffers(ID3D11Device* device) override;
+		bool LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filename) override { return true; };
+		void ReleaseTexture() override { };
 	};
 }

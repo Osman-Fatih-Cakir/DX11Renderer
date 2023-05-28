@@ -4,6 +4,7 @@
 #include "Renderer/Camera.h"
 #include "Renderer/Mesh.h"
 #include "Renderer/ForwardRenderPass.h"
+#include "Renderer/GrassRenderPass.h"
 
 namespace DX11Renderer
 {
@@ -25,7 +26,8 @@ namespace DX11Renderer
 		bool m_fullscreen = false;
 
 		Camera* m_camera = nullptr;
-		Mesh* m_mesh = nullptr;
+		GrassMesh* m_grassMesh = nullptr;
 		ForwardRenderPass* m_forwardRenderPass = nullptr;
+		GrassRenderPass* m_grassRenderPass = nullptr;
 	};
 }

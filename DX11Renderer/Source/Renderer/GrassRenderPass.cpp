@@ -1,12 +1,12 @@
-#include "ForwardRenderPass.h"
+#include "GrassRenderPass.h"
 #include "../Utils/Utils.h"
 
 namespace DX11Renderer
 {
-  bool ForwardRenderPass::Init(ID3D11Device* device, HWND hwnd)
-  {
-		std::wstring vsFilename = std::wstring(L"..\\..\\DX11Renderer\\Resources\\Shaders\\forwardRender_vs.hlsl");
-		std::wstring psFilename = std::wstring(L"..\\..\\DX11Renderer\\Resources\\Shaders\\forwardRender_ps.hlsl");
+	bool GrassRenderPass::Init(ID3D11Device* device, HWND hwnd)
+	{
+		std::wstring vsFilename = std::wstring(L"..\\..\\DX11Renderer\\Resources\\Shaders\\grassRender_vs.hlsl");
+		std::wstring psFilename = std::wstring(L"..\\..\\DX11Renderer\\Resources\\Shaders\\grassRender_ps.hlsl");
 
 		bool result = InitShader(device, hwnd, vsFilename.c_str(), psFilename.c_str());
 		if (!result)
@@ -15,16 +15,10 @@ namespace DX11Renderer
 		}
 
 		return true;
-  }
+	}
 
-	void ForwardRenderPass::Shutdown()
+	void GrassRenderPass::Shutdown()
 	{
-		if (m_samplerState)
-		{
-			m_samplerState->Release();
-			m_samplerState = nullptr;
-		}
-
 		if (m_mvpBuffer)
 		{
 			m_mvpBuffer->Release();
@@ -50,9 +44,9 @@ namespace DX11Renderer
 		}
 	}
 
-	bool ForwardRenderPass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView)
+	bool GrassRenderPass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 	{
-		bool result = SetParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, textureView);
+		bool result = SetParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix);
 		if (!result)
 		{
 			return false;
@@ -63,13 +57,13 @@ namespace DX11Renderer
 		return true;
 	}
 
-	bool ForwardRenderPass::InitShader(ID3D11Device* device, HWND hwnd, const WCHAR* vsFilename, const WCHAR* psFilename)
+	bool GrassRenderPass::InitShader(ID3D11Device* device, HWND hwnd, const WCHAR* vsFilename, const WCHAR* psFilename)
 	{
 		HRESULT result;
 		ID3D10Blob* errorMessage = nullptr;
 		ID3D10Blob* vertexShaderBuffer = nullptr;
 		ID3D10Blob* pixelShaderBuffer = nullptr;
-		D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
+		D3D11_INPUT_ELEMENT_DESC polygonLayout[1];
 		D3D11_BUFFER_DESC matrixBufferDesc;
 
 		// Compile the vertex shader code.
@@ -127,14 +121,6 @@ namespace DX11Renderer
 		polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 		polygonLayout[0].InstanceDataStepRate = 0;
 
-		polygonLayout[1].SemanticName = "TEXCOORD";
-		polygonLayout[1].SemanticIndex = 0;
-		polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-		polygonLayout[1].InputSlot = 0;
-		polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-		polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		polygonLayout[1].InstanceDataStepRate = 0;
-
 		// Get a count of the elements in the layout.
 		unsigned int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
@@ -166,40 +152,17 @@ namespace DX11Renderer
 			return false;
 		}
 
-		// Sampler state
-		D3D11_SAMPLER_DESC samplerDesc;
-		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		samplerDesc.MipLODBias = 0.0f;
-		samplerDesc.MaxAnisotropy = 1;
-		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-		samplerDesc.BorderColor[0] = 0;
-		samplerDesc.BorderColor[1] = 0;
-		samplerDesc.BorderColor[2] = 0;
-		samplerDesc.BorderColor[3] = 0;
-		samplerDesc.MinLOD = 0;
-		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-		// Create the texture sampler state.
-		result = device->CreateSamplerState(&samplerDesc, &m_samplerState);
-		if (FAILED(result))
-		{
-			return false;
-		}
-
 		return true;
 	}
 
-	void ForwardRenderPass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename)
+	void GrassRenderPass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename)
 	{
 		char* compileErrors = (char*)(errorMessage->GetBufferPointer());
 
 		unsigned long long bufferSize = errorMessage->GetBufferSize();
 
 		std::ofstream fout;
-		fout.open("forward-shader-error.txt");
+		fout.open("grass-shader-error.txt");
 		for (unsigned long long i = 0; i < bufferSize; i++)
 		{
 			fout << compileErrors[i];
@@ -211,7 +174,7 @@ namespace DX11Renderer
 		errorMessage = nullptr;
 	}
 
-	bool ForwardRenderPass::SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView)
+	bool GrassRenderPass::SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 	{
 		HRESULT result;
 
@@ -246,21 +209,16 @@ namespace DX11Renderer
 		// Finaly set the constant buffer in the vertex shader with the updated values.
 		deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_mvpBuffer);
 
-		// Set shader texture resource in the pixel shader.
-		deviceContext->PSSetShaderResources(0, 1, &textureView);
-
 		return true;
 	}
 
-	void ForwardRenderPass::DrawCall(ID3D11DeviceContext* deviceContext, int indexCount)
+	void GrassRenderPass::DrawCall(ID3D11DeviceContext* deviceContext, int indexCount)
 	{
 		// Input layout
 		deviceContext->IASetInputLayout(m_layout);
 
 		deviceContext->VSSetShader(m_vertexShader, NULL, 0);
 		deviceContext->PSSetShader(m_pixelShader, NULL, 0);
-
-		deviceContext->PSSetSamplers(0, 1, &m_samplerState);
 
 		deviceContext->DrawIndexed(indexCount, 0, 0);
 	}

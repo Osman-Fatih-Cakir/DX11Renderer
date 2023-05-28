@@ -1,12 +1,11 @@
-Near Tasks:
-[ ] create functions for transformation operations and use them for camera and mesh
-[ ] create an mvp matrix and sent it instead of sending projection, world, view seperately
-[ ] remove transpose mvp matrices on cpu (ForwardLightingRenderPass.cpp)
-
 Next Tasks: (all tasks are 1 day tasks)
 [+] finish the tutorial
-[ ] finish "Near Tasks"
 [ ] instanced rendering (grass rendering would be great)
+	 [+] render a grass (long pyramid)
+	 [ ] render grasses with instanciating
+	 [ ] create a tile with grasses
+	 [ ] create a terrain using tiles
+	 [ ] ? frustum culling
 [ ] ambient occlusion (render to texture)
 	- I think grass rendering would benefit more from ambent occlusion than shadows.
 	but if it is not enough, go for shadows.
