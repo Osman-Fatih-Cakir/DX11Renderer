@@ -186,12 +186,6 @@ namespace DX11Renderer
 	{
 		HRESULT result;
 
-		// TODO remove the transpose!
-		// TODO make the matrix arguments const reference!
-		worldMatrix = XMMatrixTranspose(worldMatrix);
-		viewMatrix = XMMatrixTranspose(viewMatrix);
-		projectionMatrix = XMMatrixTranspose(projectionMatrix);
-
 		// Lock the constant buffer so it can be written to.
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		result = deviceContext->Map(m_mvpBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
