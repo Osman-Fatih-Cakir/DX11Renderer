@@ -4,7 +4,7 @@
 #include <d3dcompiler.h>
 #include <directxmath.h>
 #include <fstream>
-using namespace DirectX; // TODO remove this line
+using namespace DirectX;
 
 namespace DX11Renderer
 {

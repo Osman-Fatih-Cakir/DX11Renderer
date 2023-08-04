@@ -220,10 +220,10 @@ namespace DX11Renderer
 		}
 
 		vertices[0].position = XMFLOAT3( 0.05f,	 0.0f,	 0.05f);  // front bottom left
-		vertices[1].position = XMFLOAT3( 0.0f,	 1.0f,	 0.0f);  // front top middle
-		vertices[2].position = XMFLOAT3(-0.05f,	-0.05f,	 0.05f);  // front bottom right
-		vertices[3].position = XMFLOAT3( 0.05f,	-0.05f, -0.05f);  // back bottom left
-		vertices[4].position = XMFLOAT3(-0.05f,	-0.05f, -0.05f);  // back bottom right
+		vertices[1].position = XMFLOAT3( 0.0f,	 1.0f,	 0.0f);		// top middle
+		vertices[2].position = XMFLOAT3(-0.05f,	-0.0f,	 0.05f);  // front bottom right
+		vertices[3].position = XMFLOAT3( 0.05f,	-0.0f,	-0.05f);  // back bottom left
+		vertices[4].position = XMFLOAT3(-0.05f,	-0.0f,	-0.05f);  // back bottom right
 
 		vertices[0].color =	XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 		vertices[1].color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);

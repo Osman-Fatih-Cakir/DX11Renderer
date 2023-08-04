@@ -3,15 +3,23 @@ Next Tasks: (all tasks are 1 day tasks)
 [ ] instanced rendering (grass rendering would be great)
 	 [+] render a grass (long pyramid)
 	 [ ] render grasses with instanciating
+	 	[ ] sample lardan instancinge bak, matrixleri doldurup instancdeid yollayıp yapacan 
 	 [ ] create a tile with grasses
 	 [ ] create a terrain using tiles
-	 [ ] ? frustum culling
+	 [ ] frustum culling for tiles
+	 [ ] ? occlusion culling
 [ ] ambient occlusion (render to texture)
 	- I think grass rendering would benefit more from ambent occlusion than shadows.
-	but if it is not enough, go for shadows.
-	[ ] ? Shadows
+	but if it is not enough, go for shadows. It can be costly too, so may just scratch out or disable
+	and find a way to show bottom of grasses darker(gradiently darker).
+--
+		lighting with forward rendering is not convinient since the scenes will consist of a lot of meshes.
+		so go for deferred if u want to achieve this.	
+	[ ] sun light
+	[ ] shadow
+--
 [ ] compute shaders
 	- ? wind simulation
 	- ? cloud rendering
-	- what else?
-[ ] ? terrain rendering
+	- ? wave rendering
+[ ] real-time terrain rendering
