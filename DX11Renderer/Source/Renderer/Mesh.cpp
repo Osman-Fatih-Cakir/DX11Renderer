@@ -1,6 +1,11 @@
 #include "Mesh.h"
 #include "../Utils/Utils.h"
 
+#define TINYGLTF_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "tiny_gltf.h"
+
 namespace DX11Renderer
 {
 	Mesh::Mesh()
@@ -13,7 +18,7 @@ namespace DX11Renderer
 		bool result;
 
 		// Initialize the vertex and index buffers.
-		result = InitBuffers(device);
+		result = InitBuffers(device, deviceContext);
 		if (!result)
 		{
 			return false;
@@ -64,7 +69,7 @@ namespace DX11Renderer
 		return true;
 	}
 
-	bool Mesh::InitBuffers(ID3D11Device* device)
+	bool Mesh::InitBuffers(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 	{
 		HRESULT result;
 
@@ -197,13 +202,19 @@ namespace DX11Renderer
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
 
-	bool GrassMesh::InitBuffers(ID3D11Device* device)
+	bool GrassMesh::InitBuffers(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 	{
+		GrassVertex* vertices = nullptr;
+		unsigned long* indices = nullptr;
+
+		// Load grass mesh
+		if (!LoadGLTF(&vertices, &indices, device, deviceContext))
+		{
+			return false;
+		}
+
 		HRESULT result;
-
-		GrassVertex* vertices;
-		unsigned long* indices;
-
+		/*
 		m_vertexCount = 5;
 		m_indexCount = 18;
 
@@ -257,6 +268,7 @@ namespace DX11Renderer
 		indices[15] = 2; // bottom up
 		indices[16] = 4;
 		indices[17] = 3;
+		*/
 
 		// Set up the desc of static vertex buffer.
 		D3D11_BUFFER_DESC vertexBufferDesc;
@@ -303,8 +315,119 @@ namespace DX11Renderer
 		}
 
 		// Note: Deletion is done since we do not need the data "for now".
-		Utils::SafeDel(vertices);
-		Utils::SafeDel(indices);
+		Utils::SafeDelArray(vertices);
+		Utils::SafeDelArray(indices);
+
+		return true;
+	}
+
+	bool GrassMesh::LoadGLTF(GrassVertex** vertices, unsigned long** indices, ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+	{
+		tinygltf::Model model;
+		tinygltf::TinyGLTF gltf_ctx;
+		std::string err;
+		std::string warn;
+		std::string input_filename("..\\..\\DX11Renderer\\Resources\\GLTF\\single_grass\\scene.gltf");
+
+		gltf_ctx.LoadASCIIFromFile(&model, &err, &warn, input_filename.c_str());
+
+		// Vertex attributes
+		for (std::pair<std::string, int> attribute : model.meshes[0].primitives[0].attributes)
+		{
+			std::string name = attribute.first;
+			int attributeIndex = attribute.second;
+
+			size_t byteOffset = model.bufferViews[attributeIndex].byteOffset;
+			size_t byteLength = model.bufferViews[attributeIndex].byteLength;
+			int target = model.bufferViews[attributeIndex].target;
+			size_t componentCountPerElement = tinygltf::GetNumComponentsInType(model.accessors[attributeIndex].type);
+			size_t componentSizeInBytes = tinygltf::GetComponentSizeInBytes(model.accessors[attributeIndex].componentType);
+			size_t elementCount = model.accessors[attributeIndex].count;
+
+			for (size_t elementIndex = 0; elementIndex < elementCount; ++elementIndex)
+			{
+				size_t byteIndex = byteOffset + componentCountPerElement * componentSizeInBytes * elementIndex;
+
+				if (target == TINYGLTF_TARGET_ARRAY_BUFFER)
+				{
+					if (*vertices == nullptr)
+					{
+						// set vertex count
+						m_vertexCount = (UINT)elementCount;
+						*vertices = new GrassVertex[elementCount];
+					}
+
+					if (name == "POSITION")
+					{
+						// position compoenent type is float-32, vec3
+
+						float element1 = *(float*)(model.buffers[0].data.data() + byteIndex + 0);
+						float element2 = *(float*)(model.buffers[0].data.data() + byteIndex + 4);
+						float element3 = *(float*)(model.buffers[0].data.data() + byteIndex + 8);
+						(*vertices)[elementIndex].position = { element1, element2, element3 };
+					}
+					else if (name == "NORMAL")
+					{
+						// normal compoenent type is float-32, vec3
+
+						float element1 = *(float*)(model.buffers[0].data.data() + byteIndex + 0);
+						float element2 = *(float*)(model.buffers[0].data.data() + byteIndex + 4);
+						float element3 = *(float*)(model.buffers[0].data.data() + byteIndex + 8);
+						(*vertices)[elementIndex].normal = { element1, element2, element3 };
+					}
+					else if (name == "TEXCOORD_0")
+					{
+						// texCoord compoenent type is uint16, vec2
+
+						float element1 = *(float*)(model.buffers[0].data.data() + byteIndex + 0);
+						float element2 = *(float*)(model.buffers[0].data.data() + byteIndex + 4);
+						(*vertices)[elementIndex].texCoord = { element1, element2 };
+					}
+					else
+					{
+						assert(0 && "Unkown primitive attribute");
+					}
+				}
+				else
+				{
+					assert(0 && "Elemental array buffer is not supported. Indices are loading below.");
+				}
+			}
+		}
+
+		// Indices
+		size_t byteOffset = model.bufferViews.back().byteOffset;
+		size_t byteLength = model.bufferViews.back().byteLength;
+		int target = model.bufferViews.back().target;
+		size_t componentSizeInBytes = tinygltf::GetComponentSizeInBytes(model.accessors.back().componentType);
+		size_t elementCount = model.accessors.back().count;
+		if (*indices == nullptr)
+		{
+			// set index count
+			m_indexCount = (UINT)elementCount;
+			*indices = new unsigned long[elementCount];
+		}
+
+		if (target != TINYGLTF_TARGET_ELEMENT_ARRAY_BUFFER)
+		{
+			assert(0 && "Indices should be on element array buffer?!");
+		}
+
+		for (size_t elementIndex = 0; elementIndex < elementCount; ++elementIndex)
+		{
+			size_t byteIndex = byteOffset +  componentSizeInBytes * elementIndex;
+			(*indices)[elementIndex] = (unsigned long)(*(unsigned short*)(model.buffers[0].data.data() + byteIndex));
+		}
+
+		// Load texture
+		m_texture = new Texture();
+		tinygltf::Image& image = model.images[0];
+		unsigned char* ptr = image.image.data();
+		bool result = m_texture->Init(device, deviceContext, image.name.c_str()/* careful, no extension in this name */, image.height, image.width, ptr);
+		if (!result)
+		{
+			return false;
+		}
 
 		return true;
 	}

@@ -6,10 +6,11 @@
 
 namespace DX11Renderer
 {
+	// TODO remove targa things
 	class Texture
 	{
 	public:
-		bool Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filename);
+		bool Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filename, int height = 0, int width = 0, unsigned char* loadedData = nullptr);
 		void Shutdown();
 
 		inline ID3D11ShaderResourceView* GetTextureView()

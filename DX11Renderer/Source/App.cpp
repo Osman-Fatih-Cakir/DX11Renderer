@@ -67,7 +67,7 @@ namespace DX11Renderer
 		m_camera->Init(PI / 4.0f, (float)screenWidth / screenHeight, 0.3f, 1000.0f);
 
 		m_grassMesh = new GrassMesh();
-		result = m_grassMesh->Init(m_renderer->GetDevice(), m_renderer->GetDeviceContext(), "..\\..\\DX11Renderer\\Resources\\Textures\\stone01.tga");
+		result = m_grassMesh->Init(m_renderer->GetDevice(), m_renderer->GetDeviceContext(), "..\\..\\DX11Renderer\\Resources\\GLTF\\single_grass\\textures\\02_-_Default_baseColor.png");
 		if (!result)
 		{
 			MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -120,7 +120,7 @@ namespace DX11Renderer
 
 		m_grassMesh->SetBuffers(m_renderer->GetDeviceContext());
 
-		bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+		bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_grassMesh->GetTexture()->GetTextureView());
 		if (!result)
 		{
 			return false;

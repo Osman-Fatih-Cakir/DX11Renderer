@@ -13,14 +13,14 @@ namespace DX11Renderer
 	public:
 		bool Init(ID3D11Device* device, HWND hwnd);
 		void Shutdown();
-		bool Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
+		bool Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView);
 
 	private:
 		bool InitShader(ID3D11Device* device, HWND hwnd, const WCHAR* vsFilename, const WCHAR* psFilename);
 		void OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename);
 
-		bool SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
-		void DrawCall(ID3D11DeviceContext* deviceContext, int indexCount);
+		bool SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView);
+		void DrawCall(ID3D11DeviceContext* deviceContext, UINT indexCount);
 
 	private:
 		struct MVPMatrixBuffer
@@ -34,5 +34,7 @@ namespace DX11Renderer
 		ID3D11PixelShader* m_pixelShader = nullptr;
 		ID3D11InputLayout* m_layout = nullptr;
 		ID3D11Buffer* m_mvpBuffer = nullptr;
+		ID3D11SamplerState* m_samplerState = nullptr;
+		ID3D11BlendState* m_blendState = nullptr;;
 	};
 }

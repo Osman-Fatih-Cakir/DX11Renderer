@@ -3,21 +3,29 @@
 
 namespace DX11Renderer
 {
-	bool Texture::Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filename)
+	bool Texture::Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filename, int height, int width, unsigned char* loadedData)
 	{
 		bool result;
-		int height, width;
 		HRESULT hResult;
 		unsigned int rowPitch;
 
 		m_fileName = filename;
 
-		// Load the targa image data into memory.
-		unsigned char* targaData = nullptr;
-		result = LoadTarga32Bit(filename, height, width, &targaData);
-		if (!result)
+		unsigned char* imageData = nullptr;
+		bool loadedTarga = false;
+		if (!loadedData)
 		{
-			return false;
+			// Load the targa image data into memory.
+			result = LoadTarga32Bit(filename, height, width, &imageData);
+			if (!result)
+			{
+				return false;
+			}
+			loadedTarga = true;
+		}
+		else
+		{
+			imageData = loadedData;
 		}
 
 		// Setup the description of the texture.
@@ -45,7 +53,7 @@ namespace DX11Renderer
 		rowPitch = (width * 4) * sizeof(unsigned char);
 
 		// Copy the targa image data into the texture.
-		deviceContext->UpdateSubresource(m_texture, 0, NULL, targaData, rowPitch, 0);
+		deviceContext->UpdateSubresource(m_texture, 0, NULL, imageData, rowPitch, 0);
 
 		// Setup the shader resource view description.
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -65,7 +73,8 @@ namespace DX11Renderer
 		deviceContext->GenerateMips(m_textureView);
 
 		// We do not need the data on cpu (for now).
-		Utils::SafeDelArray(targaData);
+		if (loadedTarga)
+			Utils::SafeDelArray(imageData);
 		
 		return true;
 	}

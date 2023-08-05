@@ -16,7 +16,7 @@ namespace DX11Renderer
 		void Shutdown();
 		virtual void SetBuffers(ID3D11DeviceContext* deviceContext);
 
-		inline int GetIndexCount()
+		inline UINT GetIndexCount()
 		{
 			return m_indexCount;
 		}
@@ -33,7 +33,7 @@ namespace DX11Renderer
 
 	protected:
 		virtual bool LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filename);
-		virtual bool InitBuffers(ID3D11Device* device);
+		virtual bool InitBuffers(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 		virtual void ReleaseTexture();
 		void ShutdownBuffers();
 
@@ -46,8 +46,8 @@ namespace DX11Renderer
 
 		ID3D11Buffer* m_vertexBuffer = nullptr;
 		ID3D11Buffer* m_indexBuffer = nullptr;
-		int m_vertexCount = 0;
-		int m_indexCount = 0;
+		UINT m_vertexCount = 0;
+		UINT m_indexCount = 0;
 
 		XMMATRIX m_worldMatrix;
 
@@ -62,22 +62,20 @@ namespace DX11Renderer
 
 		void SetBuffers(ID3D11DeviceContext* deviceContext) override;
 
-		inline Texture* GetTexture() override
-		{
-			assert("No texture for grass!" && false);
-			return nullptr;
-		}
-
 	protected:
 
 		struct GrassVertex
 		{
 			XMFLOAT3 position;
-			XMFLOAT4 color;
+			XMFLOAT3 normal;
+			XMFLOAT2 texCoord;
 		};
 
-		bool InitBuffers(ID3D11Device* device) override;
-		bool LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filename) override { return true; };
-		void ReleaseTexture() override { };
+		// load the grass texture from the gltf
+		virtual bool LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const char* filename) override { return true; }
+
+		bool InitBuffers(ID3D11Device* device, ID3D11DeviceContext* deviceContext) override;
+
+		bool LoadGLTF(GrassVertex** vertices, unsigned long** indices, ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 	};
 }
