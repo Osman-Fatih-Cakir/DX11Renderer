@@ -329,7 +329,9 @@ namespace DX11Renderer
 		std::string warn;
 		std::string input_filename("..\\..\\DX11Renderer\\Resources\\GLTF\\single_grass\\scene.gltf");
 
+		stbi_set_flip_vertically_on_load(true);
 		gltf_ctx.LoadASCIIFromFile(&model, &err, &warn, input_filename.c_str());
+		stbi_set_flip_vertically_on_load(false);
 
 		// Vertex attributes
 		for (std::pair<std::string, int> attribute : model.meshes[0].primitives[0].attributes)

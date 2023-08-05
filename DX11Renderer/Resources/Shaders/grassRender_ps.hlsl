@@ -11,8 +11,6 @@ struct PixelInputType
 
 float4 Main(PixelInputType input) : SV_TARGET
 {
-  float2 revertedTexCoord = input.texCoord;
-  revertedTexCoord.y = 1.0f - revertedTexCoord.y; // TODO reverse invert
-  float4 textureColor = colorTexture.Sample(samplerState, revertedTexCoord);
+  float4 textureColor = colorTexture.Sample(samplerState, input.texCoord);
   return textureColor;
 }
