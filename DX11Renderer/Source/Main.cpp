@@ -203,8 +203,8 @@ namespace DX11Renderer
 		else
 		{
 			// If windowed then set it to a resolution.
-			screenWidth = 1920;//1280;
-			screenHeight = 1080;// 720;
+			screenWidth = 1280;
+			screenHeight = 720;
 
 			// Place the window in the middle of the screen.
 			m_posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;

@@ -4,7 +4,6 @@ Next Tasks: (all tasks are 1 day tasks)
 	 [+] render a grass (long pyramid)
 	 [+] import and render a grass
 	 [+] check memory leaks
-	 [ ] fix camera movements
 	 [ ] render grasses with instanciating
 	 	[ ] sample lardan instancinge bak, matrixleri doldurup instancdeid yollayıp yapacan 
 	 [ ] create a tile with grasses
