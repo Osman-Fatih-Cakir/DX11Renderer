@@ -1,10 +1,10 @@
 #include "Main.h"
 #include "Utils/Utils.h"
 
-/*
+#ifdef DEBUG
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
-*/
+#endif // DEBUG
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
@@ -26,7 +26,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 	main->Shutdown();
 	DX11Renderer::Utils::SafeDel(main);
 
-	//_CrtDumpMemoryLeaks();
+#ifdef DEBUG
+	_CrtDumpMemoryLeaks();
+#endif // DEBUG
 
 	return 0;
 }
