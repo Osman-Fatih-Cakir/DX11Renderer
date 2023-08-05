@@ -2,7 +2,7 @@ Next Tasks: (all tasks are 1 day tasks)
 [+] finish the tutorial
 [ ] instanced rendering (grass rendering would be great)
 	 [+] render a grass (long pyramid)
-	 [ ] import and render a grass
+	 [+] import and render a grass
 	 	[ ] fix attribute types. float4 -> float3
 	 [ ] check memory leaks
 	 [ ] fix camera movements
