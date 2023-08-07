@@ -3,12 +3,18 @@
 
 namespace DX11Renderer
 {
-	bool GrassRenderPass::Init(ID3D11Device* device, HWND hwnd)
+	bool GrassRenderPass::Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, HWND hwnd)
 	{
 		std::wstring vsFilename = std::wstring(L"..\\..\\DX11Renderer\\Resources\\Shaders\\grassRender_vs.hlsl");
 		std::wstring psFilename = std::wstring(L"..\\..\\DX11Renderer\\Resources\\Shaders\\grassRender_ps.hlsl");
 
-		bool result = InitShader(device, hwnd, vsFilename.c_str(), psFilename.c_str());
+		bool result = InitShaders(device, hwnd, vsFilename.c_str(), psFilename.c_str());
+		if (!result)
+		{
+			return false;
+		}
+
+		result = InitBuffers(device, deviceContext);
 		if (!result)
 		{
 			return false;
@@ -19,10 +25,16 @@ namespace DX11Renderer
 
 	void GrassRenderPass::Shutdown()
 	{
-		if (m_mvpBuffer)
+		if (m_cbPerFrame)
 		{
-			m_mvpBuffer->Release();
-			m_mvpBuffer = nullptr;
+			m_cbPerFrame->Release();
+			m_cbPerFrame = nullptr;
+		}
+
+		if (m_cbPerScene)
+		{
+			m_cbPerScene->Release();
+			m_cbPerScene = nullptr;
 		}
 
 		if (m_layout)
@@ -56,9 +68,9 @@ namespace DX11Renderer
 		}
 	}
 
-	bool GrassRenderPass::Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView)
+	bool GrassRenderPass::Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView)
 	{
-		bool result = SetParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, textureView);
+		bool result = SetParameters(deviceContext, viewMatrix, projectionMatrix, textureView);
 		if (!result)
 		{
 			return false;
@@ -69,14 +81,12 @@ namespace DX11Renderer
 		return true;
 	}
 
-	bool GrassRenderPass::InitShader(ID3D11Device* device, HWND hwnd, const WCHAR* vsFilename, const WCHAR* psFilename)
+	bool GrassRenderPass::InitShaders(ID3D11Device* device, HWND hwnd, const WCHAR* vsFilename, const WCHAR* psFilename)
 	{
 		HRESULT result;
 		ID3D10Blob* errorMessage = nullptr;
 		ID3D10Blob* vertexShaderBuffer = nullptr;
 		ID3D10Blob* pixelShaderBuffer = nullptr;
-		D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
-		D3D11_BUFFER_DESC matrixBufferDesc;
 
 		// Compile the vertex shader code.
 		result = D3DCompileFromFile(vsFilename, NULL, NULL, "Main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &vertexShaderBuffer, &errorMessage);
@@ -125,6 +135,7 @@ namespace DX11Renderer
 		}
 
 		// Create the vertex input layout description.
+		D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
 		polygonLayout[0].SemanticName = "POSITION";
 		polygonLayout[0].SemanticIndex = 0;
 		polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -166,19 +177,12 @@ namespace DX11Renderer
 		pixelShaderBuffer->Release();
 		pixelShaderBuffer = nullptr;
 
-		// constant buffer
-		matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		matrixBufferDesc.ByteWidth = sizeof(MVPMatrixBuffer);
-		matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		matrixBufferDesc.MiscFlags = 0;
-		matrixBufferDesc.StructureByteStride = 0;
+		return true;
+	}
 
-		result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_mvpBuffer);
-		if (FAILED(result))
-		{
-			return false;
-		}
+	bool GrassRenderPass::InitBuffers(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+	{
+		HRESULT result;
 
 		// Sampler state
 		D3D11_SAMPLER_DESC samplerDesc;
@@ -225,6 +229,51 @@ namespace DX11Renderer
 			return false;
 		}
 
+		// per frame constant buffer
+		D3D11_BUFFER_DESC perFrameBufferDesc;
+		perFrameBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		perFrameBufferDesc.ByteWidth = sizeof(PerFrameData);
+		perFrameBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		perFrameBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		perFrameBufferDesc.MiscFlags = 0;
+		perFrameBufferDesc.StructureByteStride = 0;
+
+		result = device->CreateBuffer(&perFrameBufferDesc, NULL, &m_cbPerFrame);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Per scene data
+		UINT squareRoot = (UINT)std::sqrt(m_grassCount);
+		int count = 0;
+		for (UINT i = 0; i < squareRoot; ++i)
+		{
+			for (UINT j = 0; j < squareRoot; ++j)
+			{
+				m_perSceneData.world[count] = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+				m_perSceneData.world[count] = m_perSceneData.world[count] * XMMatrixTranslation(-5.0f + i * 0.5f, 0.0f, -5.0f + j * 0.5f);
+				count++;
+			}
+		}
+
+		// per scene constant buffer
+		D3D11_BUFFER_DESC perSceneBufferDesc;
+		perSceneBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		perSceneBufferDesc.ByteWidth = sizeof(PerSceneData);
+		perSceneBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		perSceneBufferDesc.CPUAccessFlags = 0;
+		perSceneBufferDesc.MiscFlags = 0;
+		perSceneBufferDesc.StructureByteStride = 0;
+
+		result = device->CreateBuffer(&perSceneBufferDesc, NULL, &m_cbPerScene);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		deviceContext->UpdateSubresource(m_cbPerScene, 0, NULL, &m_perSceneData, 0, 0);
+
 		return true;
 	}
 
@@ -247,34 +296,30 @@ namespace DX11Renderer
 		errorMessage = nullptr;
 	}
 
-	bool GrassRenderPass::SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView)
+	bool GrassRenderPass::SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView)
 	{
 		HRESULT result;
 
 		// Lock the constant buffer so it can be written to.
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		result = deviceContext->Map(m_mvpBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		result = deviceContext->Map(m_cbPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result))
 		{
 			return false;
 		}
 
 		// Get a pointer to the data in the constant buffer.
-		MVPMatrixBuffer* dataPtr = (MVPMatrixBuffer*)mappedResource.pData;
+		PerFrameData* dataPtr = (PerFrameData*)mappedResource.pData;
 
 		// Copy the matrices into the constant buffer.
-		dataPtr->world = worldMatrix;
 		dataPtr->view = viewMatrix;
 		dataPtr->projection = projectionMatrix;
 
 		// Unlock the constant buffer.
-		deviceContext->Unmap(m_mvpBuffer, 0);
+		deviceContext->Unmap(m_cbPerFrame, 0);
 
-		// Set the position of the constant buffer in the vertex shader.
-		unsigned int bufferNumber = 0;
-
-		// Finaly set the constant buffer in the vertex shader with the updated values.
-		deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_mvpBuffer);
+		ID3D11Buffer* vsConstBuffers[2] = { m_cbPerFrame, m_cbPerScene };
+		deviceContext->VSSetConstantBuffers(0, 2, vsConstBuffers);
 
 		// Set shader texture resource in the pixel shader.
 		deviceContext->PSSetShaderResources(0, 1, &textureView);
@@ -296,6 +341,6 @@ namespace DX11Renderer
 
 		deviceContext->PSSetSamplers(0, 1, &m_samplerState);
 
-		deviceContext->DrawIndexedInstanced(indexCount, 1, 0, 0, 0);
+		deviceContext->DrawIndexedInstanced(indexCount, m_grassCount, 0, 0, 0);
 	}
 }

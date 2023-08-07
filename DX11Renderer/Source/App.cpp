@@ -83,7 +83,7 @@ namespace DX11Renderer
 		}
 
 		m_grassRenderPass = new GrassRenderPass();
-		result = m_grassRenderPass->Init(m_renderer->GetDevice(), hwnd);
+		result = m_grassRenderPass->Init(m_renderer->GetDevice(), m_renderer->GetDeviceContext(), hwnd);
 		if (!result)
 		{
 			MessageBox(hwnd, L"Could not initialize the grass render pass.", L"Error", MB_OK);
@@ -120,7 +120,7 @@ namespace DX11Renderer
 
 		m_grassMesh->SetBuffers(m_renderer->GetDeviceContext());
 
-		bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_grassMesh->GetTexture()->GetTextureView());
+		bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, m_grassMesh->GetTexture()->GetTextureView());
 		if (!result)
 		{
 			return false;

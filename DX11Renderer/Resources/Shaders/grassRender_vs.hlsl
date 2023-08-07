@@ -1,10 +1,16 @@
 
-cbuffer MatrixBuffer
+#define GRASS_COUNT 441
+
+cbuffer PerFrameBuffer : register(b0)
 {
-  row_major matrix worldMatrix;
-  row_major matrix viewMatrix;
-  row_major matrix projectionMatrix;
+  row_major float4x4 viewMatrix;
+  row_major float4x4 projectionMatrix;
 };
+
+cbuffer PerSceneBuffer : register(b1)
+{
+  row_major float4x4 instanceWorldMatrices[GRASS_COUNT];
+}
 
 struct VertexInputType
 {
@@ -23,20 +29,10 @@ struct PixelInputType
 PixelInputType Main(VertexInputType input, uint instanceID : SV_InstanceID)
 {
   PixelInputType output;
-
-  input.position.w = 1.0f; // TODO use vec3 for pos and the normal
-
-  // TODO
-  matrix scaleMatrix = {
-    0.01f, 0.0f, 0.0f, 0.0f,
-    0.0f, 0.01f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.01f, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f
-  };
  
-  scaleMatrix = mul(worldMatrix, scaleMatrix);
+  float4x4 worldMatrix = instanceWorldMatrices[instanceID];
 
-  output.position = mul(mul(mul(input.position, scaleMatrix), viewMatrix), projectionMatrix); // TODO create a mvp matrix on cpu
+  output.position = mul(mul(mul(input.position, worldMatrix), viewMatrix), projectionMatrix); // TODO create a mvp matrix on cpu
 
   output.normal = input.normal;
   output.texCoord = input.texCoord;

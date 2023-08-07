@@ -1,26 +1,30 @@
 Next Tasks: (all tasks are 1 day tasks)
 [+] finish the tutorial
 [ ] instanced rendering (grass rendering would be great)
-	 [+] render a grass (long pyramid)
-	 [+] import and render a grass
-	 [+] check memory leaks
-	 [ ] render grasses with instance rendering
-	 [ ] create a tile with grasses
-	 [ ] create a terrain using tiles
-	 [ ] frustum culling for tiles
-	 [ ] ? occlusion culling
-[ ] ambient occlusion (render to texture)
-	- I think grass rendering would benefit more from ambent occlusion than shadows.
-	but if it is not enough, go for shadows. It can be costly too, so may just scratch out or disable
-	and find a way to show bottom of grasses darker(gradiently darker).
---
-		lighting with forward rendering is not convinient since the scenes will consist of a lot of meshes.
-		so go for deferred if u want to achieve this.	
-	[ ] sun light
-	[ ] shadow
+	[+] render a grass (long pyramid)
+	[+] import and render a grass
+	[+] check memory leaks
+	[+] render grasses with instance rendering
+	[ ] use better grass object, this does not look good. Less bright and good colored (light baked tones ant etc.)
+
 --
 [ ] compute shaders
 	- ? wind simulation
 	- ? cloud rendering
 	- ? wave rendering
 [ ] real-time terrain rendering
+
+-- optionals
+[ ] calculate MVP matrix on CPU
+[ ] create a tile with grasses
+[ ] create a 2D terrain using tiles
+[ ] frustum culling for tiles
+[ ] ? occlusion culling
+[ ] ambient occlusion (render to texture)
+	- I think grass rendering would benefit more from ambent occlusion than shadows.
+		but if it is not enough, go for shadows. It can be costly too, so may just scratch out or disable
+		and find a way to show bottom of grasses darker(gradiently darker).
+	- lighting with forward rendering is not convinient since the scenes will consist of a lot of meshes.
+		so go for deferred if u want to achieve this.	
+[ ] sun light
+[ ] shadow
