@@ -1,5 +1,6 @@
 #include "GrassRenderPass.h"
 #include "../Utils/Utils.h"
+#include "MathUtils.h"
 
 namespace DX11Renderer
 {
@@ -245,16 +246,12 @@ namespace DX11Renderer
 		}
 
 		// Per scene data
-		UINT squareRoot = (UINT)std::sqrt(m_grassCount);
-		int count = 0;
-		for (UINT i = 0; i < squareRoot; ++i)
+		for (UINT i = 0; i < m_grassCount; ++i)
 		{
-			for (UINT j = 0; j < squareRoot; ++j)
-			{
-				m_perSceneData.world[count] = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-				m_perSceneData.world[count] = m_perSceneData.world[count] * XMMatrixTranslation(-5.0f + i * 0.5f, 0.0f, -5.0f + j * 0.5f);
-				count++;
-			}
+				float randX = RandomFloat(-0.5f, 0.5f);
+				float randZ = RandomFloat(-0.5f, 0.5f);
+				m_perSceneData.world[i] = XMMatrixScaling(0.0002f, 0.0002f, 0.0002f);
+				m_perSceneData.world[i] = m_perSceneData.world[i] * XMMatrixTranslation(randX, 0.0f, randZ);
 		}
 
 		// per scene constant buffer

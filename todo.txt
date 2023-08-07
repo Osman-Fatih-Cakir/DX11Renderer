@@ -5,7 +5,7 @@ Next Tasks: (all tasks are 1 day tasks)
 	[+] import and render a grass
 	[+] check memory leaks
 	[+] render grasses with instance rendering
-	[ ] use better grass object, this does not look good. Less bright and good colored (light baked tones ant etc.)
+	[+] use better grass object, this does not look good. Less bright and good colored (light baked tones ant etc.)
 
 --
 [ ] compute shaders

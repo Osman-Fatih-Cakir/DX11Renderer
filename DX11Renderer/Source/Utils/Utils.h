@@ -2,6 +2,7 @@
 
 #include <windows.h>
 #include <string>
+#include <fstream>
 
 # define PI 3.14159265358979323846f
 
@@ -25,6 +26,17 @@ namespace DX11Renderer
 		{
 			delete[] ptr;
 			ptr = nullptr;
+		}
+
+		// Log functions writing to a file
+		//////////////////////////////////////////////////
+
+		static void LogToFile(const char* filename, float val)
+		{
+			std::ofstream file;
+			file.open(filename, std::ios::app);
+			file << val << std::endl;
+			file.close();
 		}
 
 		// Log functions are writing to the Output window of Visual Studio
