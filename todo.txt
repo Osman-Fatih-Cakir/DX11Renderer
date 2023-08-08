@@ -1,13 +1,8 @@
 TASKS:
-[+] finish the tutorial
-[ ] instanced rendering (grass rendering would be great)
-	[+] render a grass (long pyramid)
-	[+] import and render a grass
-	[+] check memory leaks
-	[+] render grasses with instance rendering
-	[+] use better grass object, this does not look good. Less bright and good colored (light baked tones ant etc.)
-	[+] create a tile with grasses and use them to create a scene
-[+] remove fullscreen things, just use borderless window
+[ ] wind simulation
+	[ ] compute a texture calculating force in 2D
+	[ ] translate the grass based on force texture (dont mind the stretching of the grass)
+	[ ] mind the stretching now
 
 BUGS:
 [ ] fix camera goes far when activate moving
