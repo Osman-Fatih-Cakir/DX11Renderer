@@ -1,22 +1,13 @@
 
-Texture2D colorTexture : register(t0);
-SamplerState samplerState : register(s0);
-
 struct PixelInputType
 {
   float4 position : SV_POSITION;
-  float4 normal : NORMAL;
-  float2 texCoord : TEXCOORD;
+  float height : HEIGHT;
 };
 
 float4 Main(PixelInputType input) : SV_TARGET
 {
-  float4 textureColor = colorTexture.Sample(samplerState, input.texCoord);
+  float4 color = float4(0.4f, 0.9f, 0.2f, 1.0f) * input.height * 4.5f;
 
-  if (textureColor.a < 0.1f)
-  {
-    discard;
-  }
-
-  return textureColor;
+  return color;
 }

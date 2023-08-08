@@ -43,5 +43,7 @@ namespace DX11Renderer
 		ID3D11DepthStencilState* m_depthStencilState = nullptr;
 		ID3D11DepthStencilView* m_depthStencilView = nullptr;
 		ID3D11RasterizerState* m_rasterState = nullptr;
+
+		bool m_vsync = false;
 	};
 }

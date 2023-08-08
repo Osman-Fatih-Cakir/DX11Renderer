@@ -123,7 +123,7 @@ namespace DX11Renderer
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 		// Set the refresh rate of the back buffer.
-		if (false /*if vsync active*/)
+		if (m_vsync)
 		{
 			swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
 			swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
@@ -364,7 +364,7 @@ namespace DX11Renderer
 	void Renderer::EndScene()
 	{
 		// Present the back buffer to the screen
-		if (false/*if vsync active*/)
+		if (m_vsync)
 		{
 			// Lock to screen refresh rate.
 			m_swapChain->Present(1, 0);

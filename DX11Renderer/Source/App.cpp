@@ -122,9 +122,9 @@ namespace DX11Renderer
 		{
 			for (int j = 0; j < 3; ++j)
 			{
-				const XMFLOAT4 tilePos = { -1.0f + i, 0.0f, -1.0f + j, 0.0f };
+				const XMFLOAT4 tilePos = { -4.0f + i * 4, 0.0f, -4.0f + j * 4, 0.0f };
 
-				bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, m_grassMesh->GetTexture()->GetTextureView(), tilePos);
+				bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tilePos);
 				if (!result)
 				{
 					return false;

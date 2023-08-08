@@ -1,12 +1,18 @@
+Goal:
+- Sphere shaped motors
+- Directional, omni
+- Wind reciever parameters
+(https://www.youtube.com/watch?v=MKX45_riWQA&t=627s)
+(https://www.youtube.com/watch?v=dDgyBKkSf7A&t=742s)
+
 TASKS:
 [ ] wind simulation
-	[ ] compute a texture calculating force in 2D
-	[ ] translate the grass based on force texture (dont mind the stretching of the grass)
-	[ ] mind the stretching now
+	[ ] calculate 2D noise texture with compute shader
+	[ ] using noise texture, apply translating of the grasses
 
 BUGS:
-[ ] fix camera goes far when activate moving
-
+[ ] toggle move around does not work properly
+[ ] when vsync is active, input is lagging
 
 OPTIONALS:
 [ ] compute shaders

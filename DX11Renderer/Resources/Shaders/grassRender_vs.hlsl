@@ -19,15 +19,12 @@ cbuffer PerSceneBuffer : register(b1)
 struct VertexInputType
 {
   float4 position : POSITION;
-  float3 normal : NORMAL;
-  float2 texCoord : TEXCOORD;
 };
 
 struct PixelInputType
 {
   float4 position : SV_POSITION;
-  float3 normal : NORMAL;
-  float2 texCoord : TEXCOORD;
+  float height : HEIGHT;
 };
 
 PixelInputType Main(VertexInputType input, uint instanceID : SV_InstanceID)
@@ -39,9 +36,7 @@ PixelInputType Main(VertexInputType input, uint instanceID : SV_InstanceID)
   worldPos += tilePosition;
 
   output.position = mul(mul(worldPos, viewMatrix), projectionMatrix); // TODO create a mvp matrix on cpu
-
-  output.normal = input.normal;
-  output.texCoord = input.texCoord;
+  output.height = worldPos.y / (0.6f * 20.0f); // 20 is scaling done on cpu
 
   return output;
 }

@@ -327,12 +327,9 @@ namespace DX11Renderer
 		tinygltf::TinyGLTF gltf_ctx;
 		std::string err;
 		std::string warn;
-		//std::string input_filename("..\\..\\DX11Renderer\\Resources\\GLTF\\single_grass\\scene.gltf");
-		std::string input_filename("..\\..\\DX11Renderer\\Resources\\GLTF\\new_grass\\scene.gltf");
+		std::string input_filename("..\\..\\DX11Renderer\\Resources\\GLTF\\grass\\scene.gltf");
 
-		//stbi_set_flip_vertically_on_load(true);
 		gltf_ctx.LoadASCIIFromFile(&model, &err, &warn, input_filename.c_str());
-		//stbi_set_flip_vertically_on_load(false);
 
 		// Vertex attributes
 		for (std::pair<std::string, int> attribute : model.meshes[0].primitives[0].attributes)
@@ -420,16 +417,6 @@ namespace DX11Renderer
 		{
 			size_t byteIndex = byteOffset +  componentSizeInBytes * elementIndex;
 			(*indices)[elementIndex] = (unsigned long)(*(unsigned short*)(model.buffers[0].data.data() + byteIndex));
-		}
-
-		// Load texture
-		m_texture = new Texture();
-		tinygltf::Image& image = model.images[0];
-		unsigned char* ptr = image.image.data();
-		bool result = m_texture->Init(device, deviceContext, image.name.c_str()/* careful, no file extension in this name */, image.height, image.width, ptr);
-		if (!result)
-		{
-			return false;
 		}
 
 		return true;
