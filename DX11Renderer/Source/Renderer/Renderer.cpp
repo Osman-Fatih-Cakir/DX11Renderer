@@ -3,7 +3,7 @@
 
 namespace DX11Renderer
 {
-	bool Renderer::Init(unsigned int screenWidth, unsigned int screenHeight, HWND hwnd, const RenderSettings& renderSettings)
+	bool Renderer::Init(unsigned int screenWidth, unsigned int screenHeight, HWND hwnd)
 	{
 		IDXGIFactory* factory;
 		IDXGIAdapter* adapter;
@@ -21,8 +21,6 @@ namespace DX11Renderer
 		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 		D3D11_RASTERIZER_DESC rasterDesc;
 		D3D11_VIEWPORT viewport;
-
-		m_renderSettings = renderSettings;
 
 		// Create a DirectX graphics interface factory.
 		HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
@@ -124,9 +122,8 @@ namespace DX11Renderer
 		// Set regular 32-bit surface for the back buffer.
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-
 		// Set the refresh rate of the back buffer.
-		if (m_renderSettings.VSYNC_ENABLED)
+		if (false /*if vsync active*/)
 		{
 			swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
 			swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
@@ -147,15 +144,7 @@ namespace DX11Renderer
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
 
-		// Set to full screen or windowed mode.
-		if (m_renderSettings.FULL_SCREEN)
-		{
-			swapChainDesc.Windowed = false;
-		}
-		else
-		{
-			swapChainDesc.Windowed = true;
-		}
+		swapChainDesc.Windowed = true;
 
 		// Set the scan line ordering and scaling to unspecified.
 		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
@@ -375,7 +364,7 @@ namespace DX11Renderer
 	void Renderer::EndScene()
 	{
 		// Present the back buffer to the screen
-		if (m_renderSettings.VSYNC_ENABLED)
+		if (false/*if vsync active*/)
 		{
 			// Lock to screen refresh rate.
 			m_swapChain->Present(1, 0);

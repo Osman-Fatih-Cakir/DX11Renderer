@@ -10,16 +10,10 @@ using namespace DirectX; // TODO remove this line
 
 namespace DX11Renderer
 {
-	struct RenderSettings
-	{
-		bool FULL_SCREEN = false;
-		bool VSYNC_ENABLED = true;
-	};
-
 	class Renderer
 	{
 	public:
-		bool Init(unsigned int screenWidth, unsigned int screenHeight, HWND hwnd, const RenderSettings& renderSettings);
+		bool Init(unsigned int screenWidth, unsigned int screenHeight, HWND hwnd);
 		void Shutdown();
 
 		void BeginScene();
@@ -38,7 +32,6 @@ namespace DX11Renderer
 		}
 
 	private:
-		RenderSettings m_renderSettings;
 
 		int m_videoCardMemory;
 		char m_videoCardDescription[128];

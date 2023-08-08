@@ -18,7 +18,7 @@ namespace DX11Renderer
 
 	private:
 		bool Frame();
-		void InitWindows(int& screenWidth, int& screenHeight);
+		void InitWindows();
 		void ShutdownWindows();
 
 	private:
@@ -28,9 +28,10 @@ namespace DX11Renderer
 
 		App* m_app = nullptr;
 
-		bool m_fullscreen = false;
 		int m_posX = 0;
 		int m_posY = 0;
+		int m_screenWidth = 1280;
+		int m_screenHeight = 720;
 		bool m_showCursor = true;
 	};
 

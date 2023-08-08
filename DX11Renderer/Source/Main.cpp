@@ -12,16 +12,11 @@ namespace DX11Renderer
 		// Get an external pointer to this object
 		MAIN = this;
 
-		int screenWidth, screenHeight;
 		bool result;
 
-		screenWidth = 0;
-		screenHeight = 0;
+		m_app = new App();
 
-		m_fullscreen = false;
-		m_app = new App(m_fullscreen);
-
-		InitWindows(screenWidth, screenHeight);
+		InitWindows();
 
 		// Get the middle of the window
 		RECT rect;
@@ -29,7 +24,7 @@ namespace DX11Renderer
 		g_inputManager = new InputManager();
 		g_inputManager->Init((rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2);
 
-		result = m_app->Init(screenWidth, screenHeight, m_hwnd);
+		result = m_app->Init(m_screenWidth, m_screenHeight, m_hwnd);
 		if (!result)
 		{
 			return false;
@@ -140,6 +135,8 @@ namespace DX11Renderer
 		{
 			g_inputManager->m_mouseX = GET_X_LPARAM(lparam) + m_posX;
 			g_inputManager->m_mouseY = GET_Y_LPARAM(lparam) + m_posY;
+			g_inputManager->m_deltaMouseX = GET_X_LPARAM(lparam);
+			g_inputManager->m_deltaMouseY = GET_Y_LPARAM(lparam);
 			
 			break;
 		}
@@ -162,7 +159,7 @@ namespace DX11Renderer
 		return 0;
 	}
 
-	void Main::InitWindows(int& screenWidth, int& screenHeight)
+	void Main::InitWindows()
 	{
 		// Get the instance of this application.
 		m_hInstance = GetModuleHandle(NULL);
@@ -185,43 +182,17 @@ namespace DX11Renderer
 		// Register the window class.
 		RegisterClassEx(&wc);
 
-		// Determine the resolution of the clients desktop screen.
-		screenWidth = GetSystemMetrics(SM_CXSCREEN);
-		screenHeight = GetSystemMetrics(SM_CYSCREEN);
-
 		// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
 		DEVMODE dmScreenSettings;
-		if (m_fullscreen)
-		{
-			// If full screen set the screen to maximum size of the users desktop and 32bit.
-			memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
-			dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-			dmScreenSettings.dmPelsWidth = (unsigned long)screenWidth;
-			dmScreenSettings.dmPelsHeight = (unsigned long)screenHeight;
-			dmScreenSettings.dmBitsPerPel = 32;
-			dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-			// Change the display settings to full screen.
-			ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
-
-			// Set the position of the window to the top left corner.
-			m_posX = m_posY = 0;
-		}
-		else
-		{
-			// If windowed then set it to a resolution.
-			screenWidth = 1280;
-			screenHeight = 720;
-
-			// Place the window in the middle of the screen.
-			m_posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
-			m_posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
-		}
+		// Place the window in the middle of the screen.
+		m_posX = (GetSystemMetrics(SM_CXSCREEN) - m_screenWidth) / 2;
+		m_posY = (GetSystemMetrics(SM_CYSCREEN) - m_screenHeight) / 2;
 
 		// Create the window with the screen settings and get the handle to it.
 		m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_applicationName, m_applicationName,
 			WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
-			m_posX, m_posY, screenWidth, screenHeight, NULL, NULL, m_hInstance, NULL);
+			m_posX, m_posY, m_screenWidth, m_screenHeight, NULL, NULL, m_hInstance, NULL);
 
 		// Bring the window up on the screen and set it as main focus.
 		ShowWindow(m_hwnd, SW_SHOW);
@@ -233,12 +204,6 @@ namespace DX11Renderer
 	{
 		// Show the mouse cursor.
 		ShowCursor(true);
-
-		// Fix the display settings if leaving full screen mode.
-		if (m_fullscreen)
-		{
-			ChangeDisplaySettings(NULL, 0);
-		}
 
 		// Remove the window.
 		DestroyWindow(m_hwnd);

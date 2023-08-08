@@ -3,18 +3,15 @@
 
 namespace DX11Renderer
 {
-	App::App(bool fullscreen)
+	App::App()
 	{
-		m_fullscreen = fullscreen;
 	}
 
 	bool App::Init(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		m_renderer = new Renderer();
 
-		RenderSettings rs;
-		rs.FULL_SCREEN = m_fullscreen;
-		bool result = m_renderer->Init(screenWidth, screenHeight, hwnd, rs);
+		bool result = m_renderer->Init(screenWidth, screenHeight, hwnd);
 		if (!result)
 		{
 			MessageBox(hwnd, L"Could not initialize Directx 11", L"Error", MB_OK);

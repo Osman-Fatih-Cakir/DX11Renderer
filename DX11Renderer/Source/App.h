@@ -11,7 +11,7 @@ namespace DX11Renderer
 	class App
 	{
 	public:
-		App(bool fullscreen);
+		App();
 		bool Init(int screenWidth, int screenHeight, HWND hwnd);
 		void Shutdown();
 		bool Frame();
@@ -22,8 +22,6 @@ namespace DX11Renderer
 		
 	private:
 		Renderer* m_renderer = nullptr;
-
-		bool m_fullscreen = false;
 
 		Camera* m_camera = nullptr;
 		GrassMesh* m_grassMesh = nullptr;

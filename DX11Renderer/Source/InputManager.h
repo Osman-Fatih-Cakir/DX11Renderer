@@ -27,6 +27,16 @@ namespace DX11Renderer
 			return m_mouseY;
 		}
 
+		inline int RelMouseX()
+		{
+			return m_relMouseX;
+		}
+
+		inline int RelMouseY()
+		{
+			return m_relMouseY;
+		}
+
 		inline int DeltaMouseX()
 		{
 			return m_deltaMouseX;
@@ -51,6 +61,8 @@ namespace DX11Renderer
 	private:
 		int m_mouseX = 0;
 		int m_mouseY = 0;
+		int m_relMouseX = 0;
+		int m_relMouseY = 0;
 
 		int m_centerMouseX = 0;
 		int m_centerMouseY = 0;
