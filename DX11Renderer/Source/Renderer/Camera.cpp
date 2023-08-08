@@ -12,7 +12,7 @@ namespace DX11Renderer
 		LookAt({ 0.0f, 2.0f, 3.0f }, { 0.0f, 0.0f, 0.0f });
 	}
 
-	void Camera::Update()
+	void Camera::Update(float deltaTime)
 	{
 		if (g_inputManager->KeyDown(Key::F))
 		{
@@ -21,7 +21,8 @@ namespace DX11Renderer
 
 		if (m_moveAroundActive)
 		{
-			const float multiplier = 0.05f;
+			const float trMultiplier = 0.01f * deltaTime;
+			const float rotMultiplier = 1.0f * deltaTime;
 
 			// TODO get deltaTime as argument
 			int deltaX = g_inputManager->DeltaMouseX();
@@ -33,8 +34,8 @@ namespace DX11Renderer
 			{
 				// Calculate rotation
 
-				m_yaw -= deltaX * multiplier;
-				m_pitch -= deltaY * multiplier;
+				m_yaw -= deltaX * rotMultiplier;
+				m_pitch -= deltaY * rotMultiplier;
 
 				if (m_pitch > 89.0f)
 					m_pitch = 89.0f;
@@ -54,19 +55,19 @@ namespace DX11Renderer
 			XMVECTOR pos = XMLoadFloat3(&m_position);
 			if (g_inputManager->KeyDown(Key::W))
 			{
-				pos += m_front * multiplier;
+				pos += m_front * trMultiplier;
 			}
 			if (g_inputManager->KeyDown(Key::S))
 			{
-				pos -= m_front * multiplier;
+				pos -= m_front * trMultiplier;
 			}
 			if (g_inputManager->KeyDown(Key::A))
 			{
-				pos += m_right * multiplier;
+				pos += m_right * trMultiplier;
 			}
 			if (g_inputManager->KeyDown(Key::D))
 			{
-				pos -= m_right * multiplier;
+				pos -= m_right * trMultiplier;
 			}
 			XMStoreFloat3(&m_position, pos);
 

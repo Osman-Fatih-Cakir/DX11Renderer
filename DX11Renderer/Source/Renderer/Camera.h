@@ -9,7 +9,7 @@ namespace DX11Renderer
 	{
 	public:
 		void Init(float fovY, float aspectRatio, float near, float far);
-		void Update();
+		void Update(float deltaTime);
 
 		inline const XMFLOAT3 GetPosition()
 		{

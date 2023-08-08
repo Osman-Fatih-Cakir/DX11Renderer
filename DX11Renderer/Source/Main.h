@@ -17,7 +17,7 @@ namespace DX11Renderer
 		LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 
 	private:
-		bool Frame();
+		bool Frame(float deltaTime);
 		void InitWindows();
 		void ShutdownWindows();
 

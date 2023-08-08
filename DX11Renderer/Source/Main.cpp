@@ -62,13 +62,6 @@ namespace DX11Renderer
 		bool done = false;
 		while (!done)
 		{
-#if 0 // Log frame duration
-			static auto t_start = std::chrono::high_resolution_clock::now();
-			const auto t_end = std::chrono::high_resolution_clock::now();
-			double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
-			t_start = t_end;
-			Utils::Log((int)elapsed_time_ms);
-#endif
 			// Handle the windows messages.
 			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 			{
@@ -83,7 +76,17 @@ namespace DX11Renderer
 			}
 			else
 			{
-				bool result = Frame();
+				static thread_local auto t_start = std::chrono::high_resolution_clock::now();
+				static thread_local float elapsedTimeInMs = 0.0f;
+
+				bool result = Frame(elapsedTimeInMs);
+
+				const auto t_end = std::chrono::high_resolution_clock::now();
+				elapsedTimeInMs = std::chrono::duration<float, std::milli>(t_end - t_start).count();
+				t_start = t_end;
+#if 0 // Log frame duration
+				Utils::Log((int)elapsedTimeInMs);
+#endif
 				if (!result)
 				{
 					done = true;
@@ -92,8 +95,9 @@ namespace DX11Renderer
 		}
 	}
 
-	bool Main::Frame()
+	bool Main::Frame(float deltaTime)
 	{
+		g_inputManager->Update();
 
 		if (g_inputManager->KeyDown(Key::Escape))
 		{
@@ -105,10 +109,10 @@ namespace DX11Renderer
 			// Hide the mouse cursor.
 			m_showCursor = !m_showCursor;
 			ShowCursor(m_showCursor);
+			Utils::Log(11111);
 		}
 
-		g_inputManager->Update();
-		bool result = m_app->Frame();
+		bool result = m_app->Frame(deltaTime);
 		if (!result)
 		{
 			return false;
@@ -181,9 +185,6 @@ namespace DX11Renderer
 
 		// Register the window class.
 		RegisterClassEx(&wc);
-
-		// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-		DEVMODE dmScreenSettings;
 
 		// Place the window in the middle of the screen.
 		m_posX = (GetSystemMetrics(SM_CXSCREEN) - m_screenWidth) / 2;

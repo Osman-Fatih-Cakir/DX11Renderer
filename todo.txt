@@ -7,10 +7,9 @@ TASKS:
 	[+] render grasses with instance rendering
 	[+] use better grass object, this does not look good. Less bright and good colored (light baked tones ant etc.)
 	[+] create a tile with grasses and use them to create a scene
-[ ] remove fullscreen things, just use borderless window
+[+] remove fullscreen things, just use borderless window
 
 BUGS:
-[ ] fix input lag
 [ ] fix camera goes far when activate moving
 
 

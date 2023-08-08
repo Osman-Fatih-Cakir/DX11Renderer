@@ -14,10 +14,10 @@ namespace DX11Renderer
 		App();
 		bool Init(int screenWidth, int screenHeight, HWND hwnd);
 		void Shutdown();
-		bool Frame();
+		bool Frame(float deltaTime);
 
 	private:
-		bool Render();
+		bool Render(float deltaTime);
 		bool InitRenderer(HWND hwnd, int screenWidth, int screenHeight);
 		
 	private:

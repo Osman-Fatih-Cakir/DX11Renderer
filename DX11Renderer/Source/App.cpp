@@ -90,9 +90,9 @@ namespace DX11Renderer
 		return true;
 	}
 
-	bool App::Frame()
+	bool App::Frame(float deltaTime)
 	{
-		bool result = Render();
+		bool result = Render(deltaTime);
 		if (!result)
 		{
 			return false;
@@ -101,7 +101,7 @@ namespace DX11Renderer
 		return true;
 	}
 
-	bool App::Render()
+	bool App::Render(float deltaTime)
 	{
 		// Clear buffers
 		m_renderer->BeginScene();
@@ -109,7 +109,7 @@ namespace DX11Renderer
 		XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 
 		// Generate the view matrix based on the camera's position.
-		m_camera->Update();
+		m_camera->Update(deltaTime);
 
 		m_grassMesh->GetWorldMatrix(worldMatrix);
 		m_camera->GetViewMatrix(viewMatrix);
