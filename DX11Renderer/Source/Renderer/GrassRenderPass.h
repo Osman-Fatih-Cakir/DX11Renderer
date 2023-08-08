@@ -13,14 +13,14 @@ namespace DX11Renderer
 	public:
 		bool Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, HWND hwnd);
 		void Shutdown();
-		bool Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView);
+		bool Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView, const XMFLOAT4& tilePos);
 
 	private:
 		bool InitShaders(ID3D11Device* device, HWND hwnd, const WCHAR* vsFilename, const WCHAR* psFilename);
 		bool InitBuffers(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 		void OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename);
 
-		bool SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView);
+		bool SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView, const XMFLOAT4& tilePos);
 		void DrawCall(ID3D11DeviceContext* deviceContext, UINT indexCount);
 
 	private:
@@ -28,6 +28,8 @@ namespace DX11Renderer
 		{
 			XMMATRIX view;
 			XMMATRIX projection;
+
+			XMFLOAT4 tilePos;
 		};
 
 		// NOTE: change grassRender_vs.hlsl constant buffer size too if u change this

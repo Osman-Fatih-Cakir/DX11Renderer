@@ -120,10 +120,19 @@ namespace DX11Renderer
 
 		m_grassMesh->SetBuffers(m_renderer->GetDeviceContext());
 
-		bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, m_grassMesh->GetTexture()->GetTextureView());
-		if (!result)
+		// Draw 9 tiles
+		for (int i = 0; i < 3; ++i)
 		{
-			return false;
+			for (int j = 0; j < 3; ++j)
+			{
+				const XMFLOAT4 tilePos = { -1.0f + i, 0.0f, -1.0f + j, 0.0f };
+
+				bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, m_grassMesh->GetTexture()->GetTextureView(), tilePos);
+				if (!result)
+				{
+					return false;
+				}
+			}
 		}
 
 		// Present the rendered scene to screen

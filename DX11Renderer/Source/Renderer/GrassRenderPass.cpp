@@ -69,9 +69,9 @@ namespace DX11Renderer
 		}
 	}
 
-	bool GrassRenderPass::Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView)
+	bool GrassRenderPass::Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView, const XMFLOAT4& tilePos)
 	{
-		bool result = SetParameters(deviceContext, viewMatrix, projectionMatrix, textureView);
+		bool result = SetParameters(deviceContext, viewMatrix, projectionMatrix, textureView, tilePos);
 		if (!result)
 		{
 			return false;
@@ -293,7 +293,7 @@ namespace DX11Renderer
 		errorMessage = nullptr;
 	}
 
-	bool GrassRenderPass::SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView)
+	bool GrassRenderPass::SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView, const XMFLOAT4& tilePos)
 	{
 		HRESULT result;
 
@@ -311,6 +311,7 @@ namespace DX11Renderer
 		// Copy the matrices into the constant buffer.
 		dataPtr->view = viewMatrix;
 		dataPtr->projection = projectionMatrix;
+		dataPtr->tilePos = tilePos;
 
 		// Unlock the constant buffer.
 		deviceContext->Unmap(m_cbPerFrame, 0);
