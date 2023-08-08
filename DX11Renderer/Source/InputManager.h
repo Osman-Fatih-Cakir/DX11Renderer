@@ -17,6 +17,16 @@ namespace DX11Renderer
 			return m_keys[(unsigned int)key];
 		}
 
+		inline int MouseX()
+		{
+			return m_mouseX;
+		}
+
+		inline int MouseY()
+		{
+			return m_mouseY;
+		}
+
 		inline int DeltaMouseX()
 		{
 			return m_deltaMouseX;
@@ -49,5 +59,7 @@ namespace DX11Renderer
 		int m_deltaMouseY = 0;
 
 		bool m_keys[256];
+
+		bool m_centerMouse = false;
 	};
 }

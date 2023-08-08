@@ -23,12 +23,15 @@ namespace DX11Renderer
 		m_deltaMouseX = m_mouseX - m_centerMouseX;
 		m_deltaMouseY = m_mouseY - m_centerMouseY;
 
-		// lock mouse to the middle
-		m_mouseX = m_centerMouseX;
-		m_mouseY = m_centerMouseY;
+		if (KeyDown(Key::F))
+			m_centerMouse = !m_centerMouse;
 
-#if 1 // debugging reason
-		SetCursorPos(m_centerMouseX, m_centerMouseY);
-#endif
+		if (m_centerMouse)
+		{
+			// lock mouse to the middle
+			SetCursorPos(m_centerMouseX, m_centerMouseY);
+			m_mouseX = m_centerMouseX;
+			m_mouseY = m_centerMouseY;
+		}
 	}
 }

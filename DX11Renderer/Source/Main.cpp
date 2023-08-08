@@ -105,6 +105,13 @@ namespace DX11Renderer
 			return false;
 		}
 
+		if (g_inputManager->KeyDown(Key::F))
+		{
+			// Hide the mouse cursor.
+			m_showCursor = !m_showCursor;
+			ShowCursor(m_showCursor);
+		}
+
 		g_inputManager->Update();
 		bool result = m_app->Frame();
 		if (!result)
@@ -220,9 +227,6 @@ namespace DX11Renderer
 		ShowWindow(m_hwnd, SW_SHOW);
 		SetForegroundWindow(m_hwnd);
 		SetFocus(m_hwnd);
-
-		// Hide the mouse cursor.
-		ShowCursor(false);
 	}
 
 	void Main::ShutdownWindows()

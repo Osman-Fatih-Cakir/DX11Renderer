@@ -31,6 +31,7 @@ namespace DX11Renderer
 		bool m_fullscreen = false;
 		int m_posX = 0;
 		int m_posY = 0;
+		bool m_showCursor = true;
 	};
 
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);

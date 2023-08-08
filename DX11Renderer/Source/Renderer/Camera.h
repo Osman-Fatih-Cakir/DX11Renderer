@@ -40,5 +40,7 @@ namespace DX11Renderer
 		XMVECTOR m_right = { 1.0f, 0.0f, 0.0f, 0.0f };
 		static constexpr XMVECTOR m_worldUp = { 0.0f, 1.0f, 0.0f, 0.0f };
 		XMVECTOR m_up = m_worldUp;
+
+		bool m_moveAroundActive = false;
 	};
 }
