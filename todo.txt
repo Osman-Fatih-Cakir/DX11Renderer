@@ -9,8 +9,6 @@ TASKS:
 [ ] wind simulation
 	[+] calculate 2D noise texture (or just steal a texture from internet :) )
 	[+] using noise texture, apply translating of the grasses, care stretching as in the talk
-	[ ] use per instance coordinates for sampling from the noise texture. The goal is to have same translation
-		for all vertices on the grass instead of different translation per vertex on the grass
 
 BUGS:
 [ ] toggle move around does not work properly
