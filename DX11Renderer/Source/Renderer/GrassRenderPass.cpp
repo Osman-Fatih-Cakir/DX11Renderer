@@ -14,6 +14,12 @@ namespace DX11Renderer
 		{
 			return false;
 		}
+		
+		result = InitNoiseTexture(device, deviceContext);
+		if (!result)
+		{
+			return false;
+		}
 
 		result = InitBuffers(device, deviceContext);
 		if (!result)
@@ -26,6 +32,12 @@ namespace DX11Renderer
 
 	void GrassRenderPass::Shutdown()
 	{
+		if (m_samplerState)
+		{
+			m_samplerState->Release();
+			m_samplerState = nullptr;
+		}
+
 		if (m_cbPerFrame)
 		{
 			m_cbPerFrame->Release();
@@ -55,11 +67,16 @@ namespace DX11Renderer
 			m_vertexShader->Release();
 			m_vertexShader = nullptr;
 		}
+
+		if (m_noiseTexture)
+		{
+			m_noiseTexture->Shutdown();
+		}
 	}
 
-	bool GrassRenderPass::Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMFLOAT4& tilePos)
+	bool GrassRenderPass::Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time)
 	{
-		bool result = SetParameters(deviceContext, viewMatrix, projectionMatrix, tilePos);
+		bool result = SetParameters(deviceContext, viewMatrix, projectionMatrix, tileCoord, tilePos, time);
 		if (!result)
 		{
 			return false;
@@ -157,6 +174,30 @@ namespace DX11Renderer
 	{
 		HRESULT result;
 
+		// Sampler state
+		D3D11_SAMPLER_DESC samplerDesc;
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		//samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.MipLODBias = 0.0f;
+		samplerDesc.MaxAnisotropy = 1;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+		samplerDesc.BorderColor[0] = 0;
+		samplerDesc.BorderColor[1] = 0;
+		samplerDesc.BorderColor[2] = 0;
+		samplerDesc.BorderColor[3] = 0;
+		samplerDesc.MinLOD = 0;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		// Create the texture sampler state.
+		result = device->CreateSamplerState(&samplerDesc, &m_samplerState);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
 		// per frame constant buffer
 		D3D11_BUFFER_DESC perFrameBufferDesc;
 		perFrameBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -175,10 +216,12 @@ namespace DX11Renderer
 		// Per scene data
 		for (UINT i = 0; i < m_grassCount; ++i)
 		{
-				float randX = RandomFloat(-2.0f, 2.0f);
-				float randZ = RandomFloat(-2.0f, 2.0f);
-				m_perSceneData.world[i] = XMMatrixScaling(20.0f, 20.0f, 20.0f); // if u change scaling on y axis, change grassRender_ps.hlsl height variable calc too
-				m_perSceneData.world[i] = m_perSceneData.world[i] * XMMatrixTranslation(randX, 0.0f, randZ);
+			//float randX = -2.0f + (i % 20) * 0.2f;
+			//float randZ = -2.0f + (i / 20) * 0.2f;
+			float randX = RandomFloat(-2.0f, 2.0f);
+			float randZ = RandomFloat(-2.0f, 2.0f);
+			m_perSceneData.world[i] = XMMatrixScaling(5.0f, 30.0f, 5.0f); // if u change scaling on y axis, change grassRender_ps.hlsl height variable calc too
+			m_perSceneData.world[i] = m_perSceneData.world[i] * XMMatrixTranslation(randX, 0.0f, randZ);
 		}
 
 		// per scene constant buffer
@@ -201,6 +244,14 @@ namespace DX11Renderer
 		return true;
 	}
 
+	bool GrassRenderPass::InitNoiseTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+	{
+		if (m_noiseTexture == nullptr)
+			m_noiseTexture = new Texture();
+
+		return m_noiseTexture->Init(device, deviceContext, "..\\..\\DX11Renderer\\Resources\\Textures\\perlinNoise256x256RGB.tga");
+	}
+
 	void GrassRenderPass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename)
 	{
 		char* compileErrors = (char*)(errorMessage->GetBufferPointer());
@@ -220,7 +271,7 @@ namespace DX11Renderer
 		errorMessage = nullptr;
 	}
 
-	bool GrassRenderPass::SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMFLOAT4& tilePos)
+	bool GrassRenderPass::SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time)
 	{
 		HRESULT result;
 
@@ -239,12 +290,17 @@ namespace DX11Renderer
 		dataPtr->view = viewMatrix;
 		dataPtr->projection = projectionMatrix;
 		dataPtr->tilePos = tilePos;
+		dataPtr->tileCoord = tileCoord;
+		dataPtr->time = time;
 
 		// Unlock the constant buffer.
 		deviceContext->Unmap(m_cbPerFrame, 0);
 
 		ID3D11Buffer* vsConstBuffers[2] = { m_cbPerFrame, m_cbPerScene };
 		deviceContext->VSSetConstantBuffers(0, 2, vsConstBuffers);
+
+		ID3D11ShaderResourceView* textureView = m_noiseTexture->GetTextureView();
+		deviceContext->VSSetShaderResources(0, 1, &textureView);
 
 		return true;
 	}
@@ -256,6 +312,8 @@ namespace DX11Renderer
 
 		deviceContext->VSSetShader(m_vertexShader, NULL, 0);
 		deviceContext->PSSetShader(m_pixelShader, NULL, 0);
+
+		deviceContext->VSSetSamplers(0, 1, &m_samplerState);
 
 		deviceContext->DrawIndexedInstanced(indexCount, m_grassCount, 0, 0, 0);
 	}

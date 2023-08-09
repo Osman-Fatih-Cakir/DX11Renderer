@@ -27,5 +27,7 @@ namespace DX11Renderer
 		GrassMesh* m_grassMesh = nullptr;
 		ForwardRenderPass* m_forwardRenderPass = nullptr;
 		GrassRenderPass* m_grassRenderPass = nullptr;
+
+		UINT m_totalTime = 0;
 	};
 }

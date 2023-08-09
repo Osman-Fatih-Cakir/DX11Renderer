@@ -24,10 +24,13 @@ namespace DX11Renderer
 			return false;
 		}
 
-		result = LoadTexture(device, deviceContext, textureFilename);
-		if (!result)
+		if (textureFilename != nullptr)
 		{
-			return false;
+			result = LoadTexture(device, deviceContext, textureFilename);
+			if (!result)
+			{
+				return false;
+			}
 		}
 
 		return true;

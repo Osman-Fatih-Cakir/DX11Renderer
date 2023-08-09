@@ -64,7 +64,7 @@ namespace DX11Renderer
 		m_camera->Init(PI / 4.0f, (float)screenWidth / screenHeight, 0.3f, 1000.0f);
 
 		m_grassMesh = new GrassMesh();
-		result = m_grassMesh->Init(m_renderer->GetDevice(), m_renderer->GetDeviceContext(), "..\\..\\DX11Renderer\\Resources\\GLTF\\single_grass\\textures\\02_-_Default_baseColor.png");
+		result = m_grassMesh->Init(m_renderer->GetDevice(), m_renderer->GetDeviceContext(), nullptr);
 		if (!result)
 		{
 			MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -98,6 +98,8 @@ namespace DX11Renderer
 			return false;
 		}
 
+		m_totalTime += (UINT)(deltaTime * 10.0f);
+
 		return true;
 	}
 
@@ -123,8 +125,9 @@ namespace DX11Renderer
 			for (int j = 0; j < 3; ++j)
 			{
 				const XMFLOAT4 tilePos = { -4.0f + i * 4, 0.0f, -4.0f + j * 4, 0.0f };
+				const XMUINT2 tileCoord = { (UINT)i , (UINT)j };
 
-				bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tilePos);
+				bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tileCoord, tilePos, m_totalTime);
 				if (!result)
 				{
 					return false;
