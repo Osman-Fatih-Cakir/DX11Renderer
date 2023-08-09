@@ -140,8 +140,10 @@ namespace DX11Renderer
 		// Set the handle for the window to render to.
 		swapChainDesc.OutputWindow = hwnd;
 
-		// Turn multisampling off.
-		swapChainDesc.SampleDesc.Count = 1;
+		// Turn multisampling on.
+		//msaaon swapChainDesc.SampleDesc.Count = 1;
+		//msaaon swapChainDesc.SampleDesc.Quality = 0;
+		swapChainDesc.SampleDesc.Count = 4;
 		swapChainDesc.SampleDesc.Quality = 0;
 
 		swapChainDesc.Windowed = true;
@@ -193,7 +195,9 @@ namespace DX11Renderer
 		depthBufferDesc.MipLevels = 1;
 		depthBufferDesc.ArraySize = 1;
 		depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		depthBufferDesc.SampleDesc.Count = 1;
+		//msaaon depthBufferDesc.SampleDesc.Count = 1;
+		//msaaon depthBufferDesc.SampleDesc.Quality = 0;
+		depthBufferDesc.SampleDesc.Count = 4;
 		depthBufferDesc.SampleDesc.Quality = 0;
 		depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 		depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
@@ -246,7 +250,8 @@ namespace DX11Renderer
 
 		// Set up the depth stencil view description.
 		depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+		//msaaon depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 		depthStencilViewDesc.Texture2D.MipSlice = 0;
 
 		// Create the depth stencil view.
@@ -260,14 +265,16 @@ namespace DX11Renderer
 		m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
 
 		// Setup the raster description which will determine how and what polygons will be drawn.
-		rasterDesc.AntialiasedLineEnable = false;
+		rasterDesc.AntialiasedLineEnable = true;
+		//msaaon rasterDesc.AntialiasedLineEnable = false;
 		rasterDesc.CullMode = D3D11_CULL_NONE;
 		rasterDesc.DepthBias = 0;
 		rasterDesc.DepthBiasClamp = 0.0f;
 		rasterDesc.DepthClipEnable = true;
 		rasterDesc.FillMode = D3D11_FILL_SOLID;
 		rasterDesc.FrontCounterClockwise = false;
-		rasterDesc.MultisampleEnable = false;
+		rasterDesc.MultisampleEnable = true;
+		//msaaon rasterDesc.MultisampleEnable = false;
 		rasterDesc.ScissorEnable = false;
 		rasterDesc.SlopeScaledDepthBias = 0.0f;
 

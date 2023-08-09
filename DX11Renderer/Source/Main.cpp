@@ -109,7 +109,6 @@ namespace DX11Renderer
 			// Hide the mouse cursor.
 			m_showCursor = !m_showCursor;
 			ShowCursor(m_showCursor);
-			Utils::Log(11111);
 		}
 
 		bool result = m_app->Frame(deltaTime);
