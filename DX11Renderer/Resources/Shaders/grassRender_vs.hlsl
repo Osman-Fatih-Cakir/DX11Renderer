@@ -95,8 +95,6 @@ float3 CalcOmniWind(float4 worldPos, float4 instanceWorldPos, float4 tilePos, fl
   dir = normalize(dir);
   dir *= -abs(noise);
 
-  //distanceFromCenter = clamp(distanceFromCenter, 1.0f, RADIUS);
-
   windedWorldPos += dir * height * height * distanceFade;
 
   // avoid stretching
@@ -121,8 +119,8 @@ PixelInputType Main(VertexInputType input, uint instanceID : SV_InstanceID)
   if (dist < RADIUS)
   {
     float distanceFade = (RADIUS - dist) / RADIUS;
-    worldPos.xyz = CalcDirectionalWind(worldPos, instanceWorldPos, tilePosition, height, distanceFade);
-    //worldPos.xyz = CalcOmniWind(worldPos, instanceWorldPos, tilePosition, height, mouseXZ, distanceFade);
+    //worldPos.xyz = CalcDirectionalWind(worldPos, instanceWorldPos, tilePosition, height, distanceFade);
+    worldPos.xyz = CalcOmniWind(worldPos, instanceWorldPos, tilePosition, height, mouseXZ, distanceFade);
   }
   worldPos += tilePosition;
 
