@@ -104,7 +104,7 @@ namespace DX11Renderer
 			return false;
 		}
 
-		if (g_inputManager->KeyDown(Key::F))
+		if (g_inputManager->KeyClick(Key::F))
 		{
 			// Hide the mouse cursor.
 			m_showCursor = !m_showCursor;

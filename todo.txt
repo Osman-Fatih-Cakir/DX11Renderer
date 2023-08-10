@@ -18,7 +18,6 @@ TASKS:
 
 BUGS:
 [ ] wind noise cuts after some time (the noise should work seamlessly)
-[ ] keysdown working multiple times ?!
 [ ] when vsync is active, input is lagging
 [ ] remove the old pipeline
 

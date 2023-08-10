@@ -95,12 +95,12 @@ namespace DX11Renderer
 
 	bool App::Frame(float deltaTime)
 	{
-		if (g_inputManager->KeyDown(Key::F))
+		if (g_inputManager->KeyClick(Key::F))
 		{
 			m_freeCameraActive = !m_freeCameraActive;
 		}
 
-		if (g_inputManager->KeyDown(Key::Q))
+		if (g_inputManager->KeyClick(Key::Q))
 		{
 			m_windType = (m_windType + 1) % 2;
 		}

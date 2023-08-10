@@ -17,6 +17,11 @@ namespace DX11Renderer
 			return m_keys[(unsigned int)key];
 		}
 
+		inline bool KeyClick(Key key)
+		{
+			return m_keys[(unsigned int)key] && m_clicked[(unsigned int)key] == 1;
+		}
+
 		inline int MouseX()
 		{
 			return m_mouseX;
@@ -51,11 +56,13 @@ namespace DX11Renderer
 		inline void SetKeyDown(unsigned int key)
 		{
 			m_keys[key] = true;
+			m_clicked[key] = 0;
 		}
 
 		inline void SetKeyUp(unsigned int key)
 		{
 			m_keys[key] = false;
+			m_clicked[key] = 0;
 		}
 
 	private:
@@ -71,6 +78,7 @@ namespace DX11Renderer
 		int m_deltaMouseY = 0;
 
 		bool m_keys[256];
+		short m_clicked[256];
 
 		bool m_centerMouse = false;
 	};

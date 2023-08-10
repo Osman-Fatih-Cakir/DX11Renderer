@@ -15,6 +15,7 @@ namespace DX11Renderer
 		for (int i = 0; i < 256; i++)
 		{
 			m_keys[i] = false;
+			m_clicked[i] = 0;
 		}
 	}
 
@@ -23,7 +24,19 @@ namespace DX11Renderer
 		m_deltaMouseX = m_mouseX - m_centerMouseX;
 		m_deltaMouseY = m_mouseY - m_centerMouseY;
 
-		if (KeyDown(Key::F))
+		for (int i = 0; i < 256; i++)
+		{
+			if (m_keys[i])
+			{
+				if (m_clicked[i] == 0 || m_clicked[i] == 1)
+				{
+					m_clicked[i]++;
+				}
+			}
+		}
+
+		// this should go somewhere
+		if (KeyClick(Key::F))
 			m_centerMouse = !m_centerMouse;
 
 		if (m_centerMouse)
