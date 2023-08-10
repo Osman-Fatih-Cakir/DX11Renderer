@@ -14,7 +14,10 @@ TASKS:
 	[ ] stretch avoid calculation makes the grasses thinner, allow a bit of stretching based on the
 		speed and etc.
 	[+] Q for switch between omni and directional
-	[ ] Simulate the wind instead of just applying noise to the vertex
+	[ ] ?!Simulate the wind instead of just applying noise to the vertex
+		- research real-time flow map (if any simulation happens, make it so)
+		- a little wind effect might be great (white lines according to the wind direction and position)
+		- what else? I want to say "I have done these based on these talks or articles"
 
 BUGS:
 [ ] wind noise cuts after some time (the noise should work seamlessly)

@@ -222,6 +222,7 @@ namespace DX11Renderer
 			//float randZ = -2.0f + (i / 20) * 0.2f;
 			float randX = RandomFloat(-2.0f, 2.0f);
 			float randZ = RandomFloat(-2.0f, 2.0f);
+			float randAngle = RandomFloat(0.0f, 180.0f);
 			// if u change scaling on y axis, change grassRender_ps.hlsl height variable calc and change the given height to WorldXZFromScreenCoord function
 			m_perSceneData.world[i] = XMMatrixScaling(20.0f, 20.0f, 20.0f);
 			m_perSceneData.world[i] = m_perSceneData.world[i] * XMMatrixTranslation(randX, 0.0f, randZ);

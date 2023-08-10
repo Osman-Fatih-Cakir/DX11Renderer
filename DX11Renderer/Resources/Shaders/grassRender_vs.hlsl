@@ -40,7 +40,7 @@ struct PixelInputType
   float height : HEIGHT;
 };
 
-float3 SampleNoiseTexture(float4 instanceWorldPos, float4 tilePos, int speed)
+float3 SampleNoiseTexture(float4 instanceWorldPos, float4 tilePos, float speed)
 {
   float totalTileSizeX = MAX_TILE_MAX_WORLD_POS_X - MIN_TILE_MIN_WORLD_POS_X;
   float totalTileSizeZ = MAX_TILE_MAX_WORLD_POS_Z - MIN_TILE_MIN_WORLD_POS_Z;
@@ -50,7 +50,7 @@ float3 SampleNoiseTexture(float4 instanceWorldPos, float4 tilePos, int speed)
   x /= 16.0f;
   z /= 16.0f;
   float2 noiseTexCoord = { x, z };
-  int rem = 100000 / speed;
+  int rem = (int)(100000.0f / speed);
   float remf = (float)rem;
   float timeFactor = (time % rem) / remf;
   timeFactor = timeFactor * 15.0f / 16.0f;
@@ -73,9 +73,9 @@ float3 RepairStretch(float3 instanceWorldPos, float3 worldPos, float3 windedWorl
 
 float3 CalcDirectionalWind(float4 worldPos, float4 instanceWorldPos, float4 tilePos, float height, float distanceFade)
 {
-  float3 noise = SampleNoiseTexture(instanceWorldPos, tilePos, 1);
+  float3 noise = SampleNoiseTexture(instanceWorldPos, tilePos, 1.5f);
   
-  noise *= 0.6f;
+  noise *= 0.8f;
   float3 windedWorldPos = worldPos.xyz;
   windedWorldPos += noise * height * height * distanceFade;
 
@@ -87,9 +87,9 @@ float3 CalcDirectionalWind(float4 worldPos, float4 instanceWorldPos, float4 tile
 
 float3 CalcOmniWind(float4 worldPos, float4 instanceWorldPos, float4 tilePos, float height, float2 mouseXZ, float distanceFade)
 {
-  float3 noise = SampleNoiseTexture(instanceWorldPos, tilePos, 1);
+  float3 noise = SampleNoiseTexture(instanceWorldPos, tilePos, 1.0f);
 
-  noise *= 0.3f;
+  noise *= 0.4f;
   float3 windedWorldPos = worldPos.xyz;
 
   float3 dir = { mouseXZ.x - (worldPos.x + tilePos.x), 1.0f, mouseXZ.y - (worldPos.z + tilePos.z) };
