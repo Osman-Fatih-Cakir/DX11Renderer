@@ -139,11 +139,11 @@ namespace DX11Renderer
 			m_lastMouseXY = m_initRelMousePos;
 
 		// Draw 9 tiles
-		for (int i = 0; i < 5; ++i)
+		for (int i = 0; i < 9; ++i)
 		{
-			for (int j = 0; j < 5; ++j)
+			for (int j = 0; j < 7; ++j)
 			{
-				const XMFLOAT4 tilePos = { -8.0f + i * 4, 0.0f, -8.0f + j * 4, 0.0f };
+				const XMFLOAT4 tilePos = { -8.0f + i * 4, 0.0f, -12.0f + j * 4, 0.0f };
 				const XMUINT2 tileCoord = { (UINT)i , (UINT)j };
 
 				bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tileCoord, tilePos, m_totalTime, m_lastMouseXY, m_camera->GetPosition(), m_windType);

@@ -2,10 +2,10 @@
 #define GRASS_COUNT_PER_EDGE 20
 #define GRASS_COUNT_PER_TILE GRASS_COUNT_PER_EDGE * GRASS_COUNT_PER_EDGE
 #define MIN_TILE_MIN_WORLD_POS_X -10
-#define MAX_TILE_MAX_WORLD_POS_X 10
-#define MIN_TILE_MIN_WORLD_POS_Z -10
-#define MAX_TILE_MAX_WORLD_POS_Z 10
-#define RADIUS 6.0f
+#define MAX_TILE_MAX_WORLD_POS_X 26
+#define MIN_TILE_MIN_WORLD_POS_Z -14
+#define MAX_TILE_MAX_WORLD_POS_Z 14
+#define RADIUS 36.0f
 
 Texture2D noiseTexture : register(t0);
 SamplerState samplerState : register(s0);
@@ -47,13 +47,13 @@ float3 SampleNoiseTexture(float4 instanceWorldPos, float4 tilePos, float speed)
   float x = (instanceWorldPos.x + tilePos.x - MIN_TILE_MIN_WORLD_POS_X) / totalTileSizeX;
   float z = (instanceWorldPos.z + tilePos.z - MIN_TILE_MIN_WORLD_POS_Z) / totalTileSizeZ;
 
-  x /= 16.0f;
-  z /= 16.0f;
+  x /= 8.0f;
+  z /= 8.0f;
   float2 noiseTexCoord = { x, z };
   int rem = (int)(100000.0f / speed);
   float remf = (float)rem;
   float timeFactor = (time % rem) / remf;
-  timeFactor = timeFactor * 15.0f / 16.0f;
+  timeFactor = timeFactor * 7.0f / 8.0f;
   noiseTexCoord.x += timeFactor;
 
   float3 noise = noiseTexture.SampleLevel(samplerState, noiseTexCoord, 0).xyz;
