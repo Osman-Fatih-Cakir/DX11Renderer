@@ -361,7 +361,7 @@ namespace DX11Renderer
 
 	void Renderer::BeginScene()
 	{
-		float color[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+		float color[4] = { 0.2f, 0.45f, 0.49f, 1.0f };
 
 		m_deviceContext->ClearRenderTargetView(m_renderTargetView, color);
 
