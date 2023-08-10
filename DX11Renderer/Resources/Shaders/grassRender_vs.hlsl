@@ -1,11 +1,11 @@
 
 #define GRASS_COUNT_PER_EDGE 20
 #define GRASS_COUNT_PER_TILE GRASS_COUNT_PER_EDGE * GRASS_COUNT_PER_EDGE
-#define MIN_TILE_MIN_WORLD_POS_X -6
-#define MAX_TILE_MAX_WORLD_POS_X 6
-#define MIN_TILE_MIN_WORLD_POS_Z -6
-#define MAX_TILE_MAX_WORLD_POS_Z 6
-#define RADIUS 3.0f
+#define MIN_TILE_MIN_WORLD_POS_X -10
+#define MAX_TILE_MAX_WORLD_POS_X 10
+#define MIN_TILE_MIN_WORLD_POS_Z -10
+#define MAX_TILE_MAX_WORLD_POS_Z 10
+#define RADIUS 6.0f
 
 Texture2D noiseTexture : register(t0);
 SamplerState samplerState : register(s0);
