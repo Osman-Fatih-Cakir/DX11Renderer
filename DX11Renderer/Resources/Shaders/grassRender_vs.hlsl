@@ -21,6 +21,7 @@ cbuffer PerFrameBuffer : register(b0)
   float2 mouseXZ;
   uint2 tileCoord;
   uint time;
+  uint windType; // 0: directional, 1: omni
 };
 
 cbuffer PerSceneBuffer : register(b1)
@@ -119,8 +120,14 @@ PixelInputType Main(VertexInputType input, uint instanceID : SV_InstanceID)
   if (dist < RADIUS)
   {
     float distanceFade = (RADIUS - dist) / RADIUS;
-    //worldPos.xyz = CalcDirectionalWind(worldPos, instanceWorldPos, tilePosition, height, distanceFade);
-    worldPos.xyz = CalcOmniWind(worldPos, instanceWorldPos, tilePosition, height, mouseXZ, distanceFade);
+    if (windType == 0) // directional
+    {
+      worldPos.xyz = CalcDirectionalWind(worldPos, instanceWorldPos, tilePosition, height, distanceFade);
+    }
+    else // if (windType == 1)
+    {
+      worldPos.xyz = CalcOmniWind(worldPos, instanceWorldPos, tilePosition, height, mouseXZ, distanceFade);
+    }
   }
   worldPos += tilePosition;
 

@@ -100,6 +100,11 @@ namespace DX11Renderer
 			m_freeCameraActive = !m_freeCameraActive;
 		}
 
+		if (g_inputManager->KeyDown(Key::Q))
+		{
+			m_windType = (m_windType + 1) % 2;
+		}
+
 		bool result = Render(deltaTime);
 		if (!result)
 		{
@@ -141,7 +146,7 @@ namespace DX11Renderer
 				const XMFLOAT4 tilePos = { -4.0f + i * 4, 0.0f, -4.0f + j * 4, 0.0f };
 				const XMUINT2 tileCoord = { (UINT)i , (UINT)j };
 
-				bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tileCoord, tilePos, m_totalTime, m_lastMouseXY, m_camera->GetPosition());
+				bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tileCoord, tilePos, m_totalTime, m_lastMouseXY, m_camera->GetPosition(), m_windType);
 				if (!result)
 				{
 					return false;

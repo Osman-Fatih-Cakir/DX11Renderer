@@ -76,9 +76,9 @@ namespace DX11Renderer
 
 	bool GrassRenderPass::Render(
 		ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix,
-		XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time, const XMINT2& mouseXY, const XMFLOAT3& camPos)
+		XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time, const XMINT2& mouseXY, const XMFLOAT3& camPos, UINT windType)
 	{
-		bool result = SetParameters(deviceContext, viewMatrix, projectionMatrix, tileCoord, tilePos, time, mouseXY, camPos);
+		bool result = SetParameters(deviceContext, viewMatrix, projectionMatrix, tileCoord, tilePos, time, mouseXY, camPos, windType);
 		if (!result)
 		{
 			return false;
@@ -276,7 +276,7 @@ namespace DX11Renderer
 
 	bool GrassRenderPass::SetParameters(
 		ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
-		const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time, const XMINT2& mouseXY, const XMFLOAT3& camPos)
+		const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time, const XMINT2& mouseXY, const XMFLOAT3& camPos, UINT windType)
 	{
 		HRESULT result;
 
@@ -297,7 +297,8 @@ namespace DX11Renderer
 		dataPtr->tilePos = tilePos;
 		dataPtr->tileCoord = tileCoord;
 		dataPtr->time = time;
-		dataPtr->mouseWorldPosXZ = WorldXZFromScreenCoord(mouseXY, 0.6f, projectionMatrix, viewMatrix);;
+		dataPtr->mouseWorldPosXZ = WorldXZFromScreenCoord(mouseXY, 0.6f, projectionMatrix, viewMatrix);
+		dataPtr->windType = windType;
 
 		// Unlock the constant buffer.
 		deviceContext->Unmap(m_cbPerFrame, 0);

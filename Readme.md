@@ -8,5 +8,6 @@ Read todo.txt for a glimpse of my plans about this project.
 
 
 ### Keys:
+- Q : toggle wind type
 - F : toggle move around
 - WASD-Mouse : Move around

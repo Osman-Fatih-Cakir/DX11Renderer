@@ -31,7 +31,9 @@ namespace DX11Renderer
 		const XMINT2 m_initRelMousePos = { 640, 320 };
 		XMINT2 m_lastMouseXY = m_initRelMousePos;
 		bool m_freeCameraActive = false;
+		UINT m_windType = 0;
 
 		UINT m_totalTime = 0;
+
 	};
 }

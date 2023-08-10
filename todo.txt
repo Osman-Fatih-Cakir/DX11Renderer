@@ -13,11 +13,12 @@ TASKS:
 	[+] radius around the mouse pos
 	[ ] stretch avoid calculation makes the grasses thinner, allow a bit of stretching based on the
 		speed and etc.
-	[ ] Q for switch between omni and directional
+	[+] Q for switch between omni and directional
+	[ ] Simulate the wind instead of just applying noise to the vertex
 
 BUGS:
 [ ] wind noise cuts after some time (the noise should work seamlessly)
-[ ] toggle move around does not work properly
+[ ] keysdown working multiple times ?!
 [ ] when vsync is active, input is lagging
 [ ] remove the old pipeline
 
@@ -39,10 +40,3 @@ OPTIONALS:
 		so go for deferred if u want to achieve this.	
 [ ] sun light
 [ ] shadow
-
-
-
-
-6.352112676056338
-0.6000000000000001
-1.5492957746478875
