@@ -7,7 +7,7 @@ struct PixelInputType
 
 float4 Main(PixelInputType input) : SV_TARGET
 {
-  float4 color = float4(0.4f, 0.9f, 0.2f, 1.0f) * input.height * 0.7f;
+  float4 color = float4(0.0f, 0.35f, 0.09f, 1.0f) * input.height * 0.7f;
 
   return color;
 }

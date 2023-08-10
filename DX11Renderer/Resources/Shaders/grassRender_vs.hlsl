@@ -5,7 +5,7 @@
 #define MAX_TILE_MAX_WORLD_POS_X 26
 #define MIN_TILE_MIN_WORLD_POS_Z -14
 #define MAX_TILE_MAX_WORLD_POS_Z 14
-#define RADIUS 36.0f
+#define RADIUS 2.0f
 
 Texture2D noiseTexture : register(t0);
 SamplerState samplerState : register(s0);
