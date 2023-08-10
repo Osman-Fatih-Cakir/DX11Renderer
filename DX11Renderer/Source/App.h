@@ -28,6 +28,10 @@ namespace DX11Renderer
 		ForwardRenderPass* m_forwardRenderPass = nullptr;
 		GrassRenderPass* m_grassRenderPass = nullptr;
 
+		const XMINT2 m_initRelMousePos = { 640, 320 };
+		XMINT2 m_lastMouseXY = m_initRelMousePos;
+		bool m_freeCameraActive = false;
+
 		UINT m_totalTime = 0;
 	};
 }

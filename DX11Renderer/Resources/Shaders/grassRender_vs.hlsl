@@ -5,6 +5,7 @@
 #define MAX_TILE_MAX_WORLD_POS_X 6
 #define MIN_TILE_MIN_WORLD_POS_Z -6
 #define MAX_TILE_MAX_WORLD_POS_Z 6
+#define RADIUS 3.0f
 
 Texture2D noiseTexture : register(t0);
 SamplerState samplerState : register(s0);
@@ -17,6 +18,7 @@ cbuffer PerFrameBuffer : register(b0)
   // another constant buffer called PerTileBuffer can be used for below
   // but this will to do the trick for now
   float4 tilePosition;
+  float2 mouseXZ;
   uint2 tileCoord;
   uint time;
 };
@@ -37,31 +39,68 @@ struct PixelInputType
   float height : HEIGHT;
 };
 
-float3 CalcWind(float4 worldPos, float4 instanceWorldPos, float4 tilePos, float height)
+float3 SampleNoiseTexture(float4 instanceWorldPos, float4 tilePos, int speed)
 {
   float totalTileSizeX = MAX_TILE_MAX_WORLD_POS_X - MIN_TILE_MIN_WORLD_POS_X;
   float totalTileSizeZ = MAX_TILE_MAX_WORLD_POS_Z - MIN_TILE_MIN_WORLD_POS_Z;
   float x = (instanceWorldPos.x + tilePos.x - MIN_TILE_MIN_WORLD_POS_X) / totalTileSizeX;
   float z = (instanceWorldPos.z + tilePos.z - MIN_TILE_MIN_WORLD_POS_Z) / totalTileSizeZ;
-  
+
   x /= 16.0f;
   z /= 16.0f;
   float2 noiseTexCoord = { x, z };
-  float timeFactor = (time % 100000) / 100000.0f;
+  int rem = 100000 / speed;
+  float remf = (float)rem;
+  float timeFactor = (time % rem) / remf;
   timeFactor = timeFactor * 15.0f / 16.0f;
   noiseTexCoord.x += timeFactor;
 
   float3 noise = noiseTexture.SampleLevel(samplerState, noiseTexCoord, 0).xyz;
-  noise *= 20.0f;
-  float3 windedWorldPos = worldPos.xyz;
-  windedWorldPos += noise * log(height + 1.0f) * 1.1f;
 
-  // avoid stretching
-  float3 rootPos = instanceWorldPos.xyz;
-  float3 ttt = worldPos.xyz - rootPos;
-  float length = sqrt(ttt.x * ttt.x + ttt.y * ttt.y + ttt.z * ttt.z); // 20 is scaling done on cpu
+  return noise;
+}
+
+float3 RepairStretch(float3 instanceWorldPos, float3 worldPos, float3 windedWorldPos)
+{
+  float3 rootPos = instanceWorldPos;
+  float3 ttt = worldPos - rootPos;
+  float length = sqrt(ttt.x * ttt.x + ttt.y * ttt.y + ttt.z * ttt.z);
   float3 currentDirection = normalize(windedWorldPos - rootPos);
   windedWorldPos = rootPos + currentDirection * length;
+  return windedWorldPos;
+}
+
+float3 CalcDirectionalWind(float4 worldPos, float4 instanceWorldPos, float4 tilePos, float height, float distanceFade)
+{
+  float3 noise = SampleNoiseTexture(instanceWorldPos, tilePos, 1);
+  
+  noise *= 0.6f;
+  float3 windedWorldPos = worldPos.xyz;
+  windedWorldPos += noise * height * height * distanceFade;
+
+  // avoid stretching
+  windedWorldPos = RepairStretch(instanceWorldPos.xyz, worldPos.xyz, windedWorldPos);
+
+  return windedWorldPos;
+}
+
+float3 CalcOmniWind(float4 worldPos, float4 instanceWorldPos, float4 tilePos, float height, float2 mouseXZ, float distanceFade)
+{
+  float3 noise = SampleNoiseTexture(instanceWorldPos, tilePos, 1);
+
+  noise *= 0.3f;
+  float3 windedWorldPos = worldPos.xyz;
+
+  float3 dir = { mouseXZ.x - (worldPos.x + tilePos.x), 1.0f, mouseXZ.y - (worldPos.z + tilePos.z) };
+  dir = normalize(dir);
+  dir *= -abs(noise);
+
+  //distanceFromCenter = clamp(distanceFromCenter, 1.0f, RADIUS);
+
+  windedWorldPos += dir * height * height * distanceFade;
+
+  // avoid stretching
+  windedWorldPos = RepairStretch(instanceWorldPos.xyz, worldPos.xyz, windedWorldPos);
 
   return windedWorldPos;
 }
@@ -74,8 +113,17 @@ PixelInputType Main(VertexInputType input, uint instanceID : SV_InstanceID)
   float4 worldPos = mul(input.position, worldMatrix);
   float4 instanceWorldPos = worldMatrix[3];
 
-  float height = worldPos.y / (0.6f * 20.0f); // 20 is scaling done on cpu
-  worldPos.xyz = CalcWind(worldPos, instanceWorldPos, tilePosition, height);
+  float height = worldPos.y / 0.6f;
+
+  // radius check
+  float2 rad = { instanceWorldPos.x + tilePosition.x - mouseXZ.x, instanceWorldPos.z + tilePosition.z - mouseXZ.y };
+  float dist = sqrt(rad.x * rad.x + rad.y * rad.y);
+  if (dist < RADIUS)
+  {
+    float distanceFade = (RADIUS - dist) / RADIUS;
+    worldPos.xyz = CalcDirectionalWind(worldPos, instanceWorldPos, tilePosition, height, distanceFade);
+    //worldPos.xyz = CalcOmniWind(worldPos, instanceWorldPos, tilePosition, height, mouseXZ, distanceFade);
+  }
   worldPos += tilePosition;
 
   output.position = mul(mul(worldPos, viewMatrix), projectionMatrix); // TODO create a mvp matrix on cpu

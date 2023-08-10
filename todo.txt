@@ -1,6 +1,6 @@
 Goal:
 - Sphere shaped motors
-- Directional, omni
+- Directional, omni-directional
 - Wind reciever parameters
 (https://www.youtube.com/watch?v=MKX45_riWQA&t=627s)
 (https://www.youtube.com/watch?v=dDgyBKkSf7A&t=742s)
@@ -9,8 +9,14 @@ TASKS:
 [ ] wind simulation
 	[+] calculate 2D noise texture (or just steal a texture from internet :) )
 	[+] using noise texture, apply translating of the grasses, care stretching as in the talk
+	[+] omni-directional wind around mouse pos
+	[+] radius around the mouse pos
+	[ ] stretch avoid calculation makes the grasses thinner, allow a bit of stretching based on the
+		speed and etc.
+	[ ] Q for switch between omni and directional
 
 BUGS:
+[ ] wind noise cuts after some time (the noise should work seamlessly)
 [ ] toggle move around does not work properly
 [ ] when vsync is active, input is lagging
 [ ] remove the old pipeline
@@ -33,3 +39,10 @@ OPTIONALS:
 		so go for deferred if u want to achieve this.	
 [ ] sun light
 [ ] shadow
+
+
+
+
+6.352112676056338
+0.6000000000000001
+1.5492957746478875

@@ -74,9 +74,11 @@ namespace DX11Renderer
 		}
 	}
 
-	bool GrassRenderPass::Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time)
+	bool GrassRenderPass::Render(
+		ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix,
+		XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time, const XMINT2& mouseXY, const XMFLOAT3& camPos)
 	{
-		bool result = SetParameters(deviceContext, viewMatrix, projectionMatrix, tileCoord, tilePos, time);
+		bool result = SetParameters(deviceContext, viewMatrix, projectionMatrix, tileCoord, tilePos, time, mouseXY, camPos);
 		if (!result)
 		{
 			return false;
@@ -220,7 +222,8 @@ namespace DX11Renderer
 			//float randZ = -2.0f + (i / 20) * 0.2f;
 			float randX = RandomFloat(-2.0f, 2.0f);
 			float randZ = RandomFloat(-2.0f, 2.0f);
-			m_perSceneData.world[i] = XMMatrixScaling(20.0f, 20.0f, 20.0f); // if u change scaling on y axis, change grassRender_ps.hlsl height variable calc too
+			// if u change scaling on y axis, change grassRender_ps.hlsl height variable calc and change the given height to WorldXZFromScreenCoord function
+			m_perSceneData.world[i] = XMMatrixScaling(20.0f, 20.0f, 20.0f);
 			m_perSceneData.world[i] = m_perSceneData.world[i] * XMMatrixTranslation(randX, 0.0f, randZ);
 		}
 
@@ -271,7 +274,9 @@ namespace DX11Renderer
 		errorMessage = nullptr;
 	}
 
-	bool GrassRenderPass::SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time)
+	bool GrassRenderPass::SetParameters(
+		ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
+		const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time, const XMINT2& mouseXY, const XMFLOAT3& camPos)
 	{
 		HRESULT result;
 
@@ -292,6 +297,7 @@ namespace DX11Renderer
 		dataPtr->tilePos = tilePos;
 		dataPtr->tileCoord = tileCoord;
 		dataPtr->time = time;
+		dataPtr->mouseWorldPosXZ = WorldXZFromScreenCoord(mouseXY, 0.6f, projectionMatrix, viewMatrix);;
 
 		// Unlock the constant buffer.
 		deviceContext->Unmap(m_cbPerFrame, 0);

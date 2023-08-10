@@ -1,6 +1,9 @@
 #include "App.h"
 #include "Utils/Utils.h"
 
+#include "InputManager.h"
+#include "Globals.h"
+
 namespace DX11Renderer
 {
 	App::App()
@@ -92,6 +95,11 @@ namespace DX11Renderer
 
 	bool App::Frame(float deltaTime)
 	{
+		if (g_inputManager->KeyDown(Key::F))
+		{
+			m_freeCameraActive = !m_freeCameraActive;
+		}
+
 		bool result = Render(deltaTime);
 		if (!result)
 		{
@@ -111,13 +119,19 @@ namespace DX11Renderer
 		XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 
 		// Generate the view matrix based on the camera's position.
-		m_camera->Update(deltaTime);
+		if (m_freeCameraActive)
+			m_camera->Update(deltaTime);
 
 		m_grassMesh->GetWorldMatrix(worldMatrix);
 		m_camera->GetViewMatrix(viewMatrix);
 		m_camera->GetProjectionMatrix(projectionMatrix);
 
 		m_grassMesh->SetBuffers(m_renderer->GetDeviceContext());
+
+		if (!m_freeCameraActive)
+			m_lastMouseXY = { g_inputManager->RelMouseX(), g_inputManager->RelMouseY() };
+		else
+			m_lastMouseXY = m_initRelMousePos;
 
 		// Draw 9 tiles
 		for (int i = 0; i < 3; ++i)
@@ -127,7 +141,7 @@ namespace DX11Renderer
 				const XMFLOAT4 tilePos = { -4.0f + i * 4, 0.0f, -4.0f + j * 4, 0.0f };
 				const XMUINT2 tileCoord = { (UINT)i , (UINT)j };
 
-				bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tileCoord, tilePos, m_totalTime);
+				bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tileCoord, tilePos, m_totalTime, m_lastMouseXY, m_camera->GetPosition());
 				if (!result)
 				{
 					return false;

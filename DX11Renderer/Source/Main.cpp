@@ -138,8 +138,8 @@ namespace DX11Renderer
 		{
 			g_inputManager->m_mouseX = GET_X_LPARAM(lparam) + m_posX;
 			g_inputManager->m_mouseY = GET_Y_LPARAM(lparam) + m_posY;
-			g_inputManager->m_deltaMouseX = GET_X_LPARAM(lparam);
-			g_inputManager->m_deltaMouseY = GET_Y_LPARAM(lparam);
+			g_inputManager->m_relMouseX = GET_X_LPARAM(lparam);
+			g_inputManager->m_relMouseY = GET_Y_LPARAM(lparam);
 			
 			break;
 		}

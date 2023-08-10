@@ -14,7 +14,7 @@ namespace DX11Renderer
 	public:
 		bool Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, HWND hwnd);
 		void Shutdown();
-		bool Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time);
+		bool Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time, const XMINT2& mouseXY, const XMFLOAT3& camPos);
 
 	private:
 		bool InitShaders(ID3D11Device* device, HWND hwnd, const WCHAR* vsFilename, const WCHAR* psFilename);
@@ -22,7 +22,7 @@ namespace DX11Renderer
 		bool InitNoiseTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 		void OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename);
 
-		bool SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time);
+		bool SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time, const XMINT2& mouseXY, const XMFLOAT3& camPos);
 		void DrawCall(ID3D11DeviceContext* deviceContext, UINT indexCount);
 
 	private:
@@ -32,6 +32,7 @@ namespace DX11Renderer
 			XMMATRIX projection;
 
 			XMFLOAT4 tilePos;
+			XMFLOAT2 mouseWorldPosXZ;
 			XMUINT2 tileCoord;
 			UINT time;
 		};
