@@ -30,6 +30,7 @@
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\App.h" />
     <ClInclude Include="Source\Renderer\Texture.h" />
+    <ClInclude Include="Source\Renderer\WindComputePass.h" />
     <ClInclude Include="Source\Utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -43,6 +44,7 @@
     <ClCompile Include="Source\Renderer\Mesh.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Renderer\Texture.cpp" />
+    <ClCompile Include="Source\Renderer\WindComputePass.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

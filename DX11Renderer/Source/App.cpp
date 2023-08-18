@@ -32,6 +32,12 @@ namespace DX11Renderer
 
 	void App::Shutdown()
 	{
+		if (m_windComputePass)
+		{
+			m_windComputePass->Shutdown();
+			Utils::SafeDel(m_windComputePass);
+		}
+
 		if (m_forwardRenderPass)
 		{
 			m_forwardRenderPass->Shutdown();
@@ -90,6 +96,14 @@ namespace DX11Renderer
 			return false;
 		}
 
+		m_windComputePass = new WindComputePass();
+		result = m_windComputePass->Init(m_renderer->GetDevice(), m_renderer->GetDeviceContext(), hwnd);
+		if (!result)
+		{
+			MessageBox(hwnd, L"Could not initialize the wind compute pass.", L"Error", MB_OK);
+			return false;
+		}
+
 		return true;
 	}
 
@@ -118,6 +132,12 @@ namespace DX11Renderer
 
 	bool App::Render(float deltaTime)
 	{
+		bool result = m_windComputePass->ExecuteComputation(m_renderer->GetDeviceContext());
+		if (!result)
+		{
+			return false;
+		}
+
 		// Clear buffers
 		m_renderer->BeginScene();
 
@@ -138,7 +158,7 @@ namespace DX11Renderer
 		else
 			m_lastMouseXY = m_initRelMousePos;
 
-		// Draw 9 tiles
+		// Draw 9 * 7 tiles
 		for (int i = 0; i < 9; ++i)
 		{
 			for (int j = 0; j < 7; ++j)
@@ -146,7 +166,7 @@ namespace DX11Renderer
 				const XMFLOAT4 tilePos = { -8.0f + i * 4, 0.0f, -12.0f + j * 4, 0.0f };
 				const XMUINT2 tileCoord = { (UINT)i , (UINT)j };
 
-				bool result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tileCoord, tilePos, m_totalTime, m_lastMouseXY, m_camera->GetPosition(), m_windType);
+				result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tileCoord, tilePos, m_totalTime, m_lastMouseXY, m_camera->GetPosition(), m_windType);
 				if (!result)
 				{
 					return false;

@@ -40,4 +40,35 @@ namespace DX11Renderer
 		ID3D11Texture2D* m_texture = nullptr;
 		ID3D11ShaderResourceView* m_textureView = nullptr;
 	};
+
+	/*
+	* Empty gpu texture
+	* 
+	* Texture Desc:
+	* R32 G32 B32 - floating point
+	* 2D texture
+	* 
+	* see details in Init function
+	*/
+	class GPUTexture
+	{
+	public:
+		bool Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, UINT width, UINT height, UINT depth);
+		void Shutdown();
+
+		inline ID3D11ShaderResourceView* GetSRV()
+		{
+			return m_srv;
+		}
+
+		inline ID3D11UnorderedAccessView* GetUAV()
+		{
+			return m_uav;
+		}
+
+	private:
+		ID3D11Texture2D* m_texture = nullptr;
+		ID3D11ShaderResourceView* m_srv = nullptr;
+		ID3D11UnorderedAccessView* m_uav = nullptr;
+	};
 }

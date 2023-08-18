@@ -5,6 +5,7 @@
 #include "Renderer/Mesh.h"
 #include "Renderer/ForwardRenderPass.h"
 #include "Renderer/GrassRenderPass.h"
+#include "Renderer/WindComputePass.h"
 
 namespace DX11Renderer
 {
@@ -27,6 +28,7 @@ namespace DX11Renderer
 		GrassMesh* m_grassMesh = nullptr;
 		ForwardRenderPass* m_forwardRenderPass = nullptr;
 		GrassRenderPass* m_grassRenderPass = nullptr;
+		WindComputePass* m_windComputePass = nullptr;
 
 		const XMINT2 m_initRelMousePos = { 640, 320 };
 		XMINT2 m_lastMouseXY = m_initRelMousePos;

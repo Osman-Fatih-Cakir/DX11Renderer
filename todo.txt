@@ -14,10 +14,20 @@ TASKS:
 	[ ] stretch avoid calculation makes the grasses thinner, allow a bit of stretching based on the
 		speed and etc.
 	[+] Q for switch between omni and directional
-	[ ] ?!Simulate the wind instead of just applying noise to the vertex
-		- research real-time flow map (if any simulation happens, make it so)
-		- a little wind effect might be great (white lines according to the wind direction and position)
-		- what else? I want to say "I have done these based on these talks or articles"
+	[ ] Simulate wind
+		[+] use two textures, calculate on one texture while giving the other texture to render
+		[ ] use 2D textures and apply the same calculations to that, use the texture for rendering
+			- after this step, everything should look the same
+		[ ] use 3D textures instead of 2D textures
+			- after this step, everything should look the same
+		[ ] calculate a wind sim for the wind texture every frame
+	[ ] make wind texture format rgb32f instead of rgba32f. See why u cant if u cant.
+	[ ] what is that hwnd doing in renderPass classes init function argument?!
+
+
+- a little wind effect might be great (white lines according to the wind direction and position)
+- what else? I want to say "I have done these based on these talks or articles"
+
 
 BUGS:
 [ ] wind noise cuts after some time (the noise should work seamlessly)
