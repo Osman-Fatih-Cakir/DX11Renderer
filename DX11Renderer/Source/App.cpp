@@ -1,5 +1,6 @@
 #include "App.h"
 #include "Utils/Utils.h"
+#include "Renderer/MathUtils.h"
 
 #include "InputManager.h"
 #include "Globals.h"
@@ -119,6 +120,15 @@ namespace DX11Renderer
 			m_windType = (m_windType + 1) % 2;
 		}
 
+		if (!m_freeCameraActive)
+			m_lastMouseXY = { g_inputManager->RelMouseX(), g_inputManager->RelMouseY() };
+		else
+			m_lastMouseXY = m_initRelMousePos;
+
+		// Generate the view matrix based on the camera's position.
+		if (m_freeCameraActive)
+			m_camera->Update(deltaTime);
+
 		bool result = Render(deltaTime);
 		if (!result)
 		{
@@ -132,7 +142,14 @@ namespace DX11Renderer
 
 	bool App::Render(float deltaTime)
 	{
-		bool result = m_windComputePass->ExecuteComputation(m_renderer->GetDeviceContext());
+		XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+		m_camera->GetViewMatrix(viewMatrix);
+		m_camera->GetProjectionMatrix(projectionMatrix);
+
+		// calculate mouse xz positions from projection and view matrices
+		const XMFLOAT2 mouseXZ = WorldXZFromScreenCoord(m_lastMouseXY, 0.6f, projectionMatrix, viewMatrix);
+
+		bool result = m_windComputePass->ExecuteComputation(m_renderer->GetDeviceContext(), mouseXZ, m_totalTime, m_windType);
 		if (!result)
 		{
 			return false;
@@ -141,22 +158,9 @@ namespace DX11Renderer
 		// Clear buffers
 		m_renderer->BeginScene();
 
-		XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
-
-		// Generate the view matrix based on the camera's position.
-		if (m_freeCameraActive)
-			m_camera->Update(deltaTime);
-
 		m_grassMesh->GetWorldMatrix(worldMatrix);
-		m_camera->GetViewMatrix(viewMatrix);
-		m_camera->GetProjectionMatrix(projectionMatrix);
 
 		m_grassMesh->SetBuffers(m_renderer->GetDeviceContext());
-
-		if (!m_freeCameraActive)
-			m_lastMouseXY = { g_inputManager->RelMouseX(), g_inputManager->RelMouseY() };
-		else
-			m_lastMouseXY = m_initRelMousePos;
 
 		// Draw 9 * 7 tiles
 		for (int i = 0; i < 9; ++i)
@@ -166,7 +170,7 @@ namespace DX11Renderer
 				const XMFLOAT4 tilePos = { -8.0f + i * 4, 0.0f, -12.0f + j * 4, 0.0f };
 				const XMUINT2 tileCoord = { (UINT)i , (UINT)j };
 
-				result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tileCoord, tilePos, m_totalTime, m_lastMouseXY, m_camera->GetPosition(), m_windType);
+				result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tileCoord, tilePos, m_totalTime, mouseXZ, m_camera->GetPosition(), m_windType);
 				if (!result)
 				{
 					return false;

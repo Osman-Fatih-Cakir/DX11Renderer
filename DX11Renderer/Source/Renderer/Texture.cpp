@@ -184,12 +184,15 @@ namespace DX11Renderer
 	bool GPUTexture::Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, UINT width, UINT height, UINT depth)
 	{
 		float* data = new float[width * height * 4];
-		//ZeroMemory(data, width * height * 4 * 4); // float is 32 bit, 4 bytes
-		// todo testing
+		//ZeroMemory(data, width * height * 4 * 4); // float is 4 bytes
+
+		// testing
+		
 		for (UINT i = 0; i < width * height * 4; ++i)
 		{
 			data[i] = (float)i;
 		}
+		
 
 		HRESULT hResult;
 

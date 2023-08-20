@@ -10,6 +10,7 @@ namespace DX11Renderer
 		m_projectionMatrix = XMMatrixPerspectiveFovLH(fovY, aspectRatio, _near, _far);
 
 		LookAt({ -11.0f, 5.0f, 0.0f }, { 0.0f, -1.0f, 0.0f });
+		//LookAt({ -1.0f, 30.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
 	}
 
 	void Camera::Update(float deltaTime)

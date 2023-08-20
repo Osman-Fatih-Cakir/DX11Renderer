@@ -1,5 +1,6 @@
 
 #include "WindComputePass.h"
+#include "../Utils/Utils.h"
 #include <string>
 #include <fstream>
 
@@ -21,6 +22,12 @@ namespace DX11Renderer
 			return false;
 		}
 
+		result = InitBuffers(device, deviceContext);
+		if (!result)
+		{
+			return false;
+		}
+
 		return true;
 	}
 
@@ -31,14 +38,32 @@ namespace DX11Renderer
 			m_computeShader->Release();
 			m_computeShader = nullptr;
 		}
+
+		if (m_noiseTexture)
+		{
+			m_noiseTexture->Shutdown();
+			Utils::SafeDel(m_noiseTexture);
+		}
+
+		if (m_windComputeTexture1)
+		{
+			m_windComputeTexture1->Shutdown();
+			Utils::SafeDel(m_windComputeTexture1);
+		}
+
+		if (m_windComputeTexture2)
+		{
+			m_windComputeTexture2->Shutdown();
+			Utils::SafeDel(m_windComputeTexture2);
+		}
 	}
 
 	// each call for this function will swap the texture that is being read and written
-	bool WindComputePass::ExecuteComputation(ID3D11DeviceContext* deviceContext)
+	bool WindComputePass::ExecuteComputation(ID3D11DeviceContext* deviceContext, const XMFLOAT2& mouseXZ, UINT totalTime, UINT windType)
 	{
 		bool result;
 
-		result = SetParameters(deviceContext);
+		result = SetParameters(deviceContext, mouseXZ, totalTime, windType);
 		if (!result)
 		{
 			return false;
@@ -95,9 +120,10 @@ namespace DX11Renderer
 
 		m_windComputeTexture1 = new GPUTexture();
 		m_windComputeTexture2 = new GPUTexture();
+		m_noiseTexture = new Texture();
 
-		constexpr int textureWidth = 36;
-		constexpr int textureHeight = 36;
+		constexpr int textureWidth = 64;
+		constexpr int textureHeight = 64;
 		constexpr int textureDepth = 16;
 
 		result = m_windComputeTexture1->Init(device, deviceContext, textureWidth, textureHeight, textureDepth);
@@ -107,6 +133,33 @@ namespace DX11Renderer
 		}
 		result = m_windComputeTexture2->Init(device, deviceContext, textureWidth, textureHeight, textureDepth);
 		if (!result)
+		{
+			return false;
+		}
+		result = m_noiseTexture->Init(device, deviceContext, "..\\..\\DX11Renderer\\Resources\\Textures\\perlinNoise256x256RGB.tga");
+		if (!result)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool WindComputePass::InitBuffers(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+	{
+		HRESULT result;
+
+		// constant buffer
+		D3D11_BUFFER_DESC constantBufferDesc;
+		constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		constantBufferDesc.ByteWidth = sizeof(CBuffer);
+		constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		constantBufferDesc.MiscFlags = 0;
+		constantBufferDesc.StructureByteStride = 0;
+
+		result = device->CreateBuffer(&constantBufferDesc, NULL, &m_cBuffer);
+		if (FAILED(result))
 		{
 			return false;
 		}
@@ -133,13 +186,36 @@ namespace DX11Renderer
 		errorMessage = nullptr;
 	}
 
-	bool WindComputePass::SetParameters(ID3D11DeviceContext* deviceContext)
+	bool WindComputePass::SetParameters(ID3D11DeviceContext* deviceContext, const XMFLOAT2& mouseXZ, UINT totalTime, UINT windType)
 	{
+		HRESULT result;
+
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		result = deviceContext->Map(m_cBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		CBuffer* dataPtr = (CBuffer*)mappedResource.pData;
+
+		dataPtr->mouseXZ = mouseXZ;
+		dataPtr->time = totalTime;
+		dataPtr->windType = windType;
+
+		// Unlock the constant buffer.
+		deviceContext->Unmap(m_cBuffer, 0);
+
+		ID3D11Buffer* constBuffers[1] = { m_cBuffer };
+		deviceContext->CSSetConstantBuffers(0, 1, constBuffers);
+
 		GPUTexture* readTex = m_readTex1WriteTex2 ? m_windComputeTexture1 : m_windComputeTexture2;
 		GPUTexture* writeTex = m_readTex1WriteTex2 ? m_windComputeTexture2 : m_windComputeTexture1;
 
+		ID3D11ShaderResourceView* noiseTexView = m_noiseTexture->GetTextureView();
 		ID3D11ShaderResourceView* readTexView = readTex->GetSRV();
-		deviceContext->CSSetShaderResources(0, 1, &readTexView);
+		ID3D11ShaderResourceView* srvs[2] = { noiseTexView, readTexView };
+		deviceContext->CSSetShaderResources(0, 2, srvs);
 
 		ID3D11UnorderedAccessView* writeTexView = writeTex->GetUAV();
 		deviceContext->CSSetUnorderedAccessViews(0, 1, &writeTexView, nullptr);
@@ -152,8 +228,8 @@ namespace DX11Renderer
 		deviceContext->CSSetShader(m_computeShader, NULL, 0);
 
 		// dispatch call
-		//todo deviceContext->Dispatch(16, 1, 1);
-		deviceContext->Dispatch(2, 2, 1);
+		//todo deviceContext->Dispatch(4, 4, 16);
+		deviceContext->Dispatch(4, 4, 1);
 
 		// deattach the resources from gpu
 		ID3D11ShaderResourceView* srvNull[2] = { nullptr, nullptr };
@@ -161,6 +237,9 @@ namespace DX11Renderer
 
 		ID3D11UnorderedAccessView* uavNull[1] = { nullptr };
 		deviceContext->CSSetUnorderedAccessViews(0, 1, uavNull, nullptr);
+
+		ID3D11Buffer* cBNull[1] = { nullptr };
+		deviceContext->CSSetConstantBuffers(0, 1, cBNull);
 
 		return true;
 	}

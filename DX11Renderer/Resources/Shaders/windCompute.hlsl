@@ -1,24 +1,86 @@
 
 /* NOTE:
-* To achieve more occupancy and efficiency the texture is 36x36x16
-* Thread group has 36x36x1 threads. There are 16 thread groups.
+* To achieve more occupancy and efficiency the texture is 64x64x16
+* Thread group has 16x16x1 threads. There are 4x4x16 thread groups.
 * The swizzling is efficient because when we sample from the texture we only access different x and y coordinates from the same slice of the 3D texture per thread group
 * (and I think this is more efficient than accessing different texture slices in the same thread group because of the texture caching. I might be wrong too btw)
 * When we sample the texture for using, we will treat the y axis as z and z axis as y
 */
 
-#define WIND_TEXTURE_WIDTH 36
-#define WIND_TEXTURE_HEIGHT 36
+#define WIND_TEXTURE_WIDTH 64
+#define WIND_TEXTURE_HEIGHT 64
 #define WIND_TEXTURE_DEPTH 16
 
-Texture2D<float4> PrevState : register(t0);
+#define NOISE_TEXTURE_SIZE 256
+
+#define RADIUS 20.0f
+
+Texture2D<float4> NoiseTexture : register(t0);
+Texture2D<float4> PrevState : register(t1);
 RWTexture2D<float4> NextState : register(u0);
 
-[numthreads(18, 18, 1)]
+cbuffer CBuffer : register(b0)
+{
+  float2 mouseXZ;
+  uint time;
+  uint windType; // 0: directional, 1: omni
+}
+
+float3 SampleNoiseTexture(uint2 coord, float speed)
+{
+  speed /= 10000.0f;
+  uint timeFactor = time * (uint)speed;
+  uint2 noiseTexCoord = uint2((coord.x + timeFactor.x) % NOISE_TEXTURE_SIZE, coord.y);
+  float3 noise = NoiseTexture[noiseTexCoord];
+
+  return noise;
+}
+
+float3 CalcDirectionalWind(uint2 coord, float distanceFade)
+{
+  float3 noise = SampleNoiseTexture(coord, 1.0f);
+  noise *= 0.8f;
+  float3 wind = noise * distanceFade;
+
+  return wind;
+}
+
+/*
+float3 CalcOmniWind(float4 worldPos, float4 instanceWorldPos, float4 tilePos, float height, float2 mouseXZ, float distanceFade)
+{
+  float3 noise = SampleNoiseTexture(instanceWorldPos, tilePos, 1.0f);
+
+  noise *= 0.4f;
+  float3 windedWorldPos = worldPos.xyz;
+
+  float3 dir = { mouseXZ.x - (worldPos.x + tilePos.x), 1.0f, mouseXZ.y - (worldPos.z + tilePos.z) };
+  dir = normalize(dir);
+  dir *= -abs(noise);
+
+  windedWorldPos += dir * height * height * distanceFade;
+
+  // avoid stretching
+  windedWorldPos = RepairStretch(instanceWorldPos.xyz, worldPos.xyz, windedWorldPos);
+
+  return windedWorldPos;
+}
+*/
+
+[numthreads(16, 16, 1)]
 void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
-	uint2 readCoord = { 35 - dispatchThreadID.x, 35 - dispatchThreadID.y };
-	uint2 writeCoord = { dispatchThreadID.x, dispatchThreadID.y };
-	//NextState[writeCoord] = float4(writeCoord.x, writeCoord.y, 0.0f, 0.0f);
-	NextState[writeCoord] = PrevState[readCoord];
+  float4 wind = { 0.0f, 0.0f, 0.0f, 0.0f };
+  uint2 coord = { dispatchThreadID.x, dispatchThreadID.y };
+
+  // the 64x64x16 sized wind texture represents the wind simulation for the coordinates {x:(-32,+32), y:(-32,+32), z:(0,+16)}
+  int2 worldCoord = { dispatchThreadID.x - (WIND_TEXTURE_WIDTH / 2), dispatchThreadID.y - (WIND_TEXTURE_HEIGHT / 2) };
+  
+  float2 rad = { (float)worldCoord.x - mouseXZ.x, (float)worldCoord.y - mouseXZ.y };
+  float dist = sqrt(rad.x * rad.x + rad.y * rad.y);
+  if (dist < RADIUS)
+  {
+    float distanceFade = 1.0f - (dist / RADIUS);
+    wind.xyz = CalcDirectionalWind(coord, distanceFade);
+  }
+  NextState[coord] = wind;
 }

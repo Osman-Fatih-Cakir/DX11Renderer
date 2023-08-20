@@ -1,6 +1,6 @@
 Goal:
 - Sphere shaped motors
-- Directional, omni-directional
+- Directional, omni-directional, spiral
 - Wind reciever parameters
 (https://www.youtube.com/watch?v=MKX45_riWQA&t=627s)
 (https://www.youtube.com/watch?v=dDgyBKkSf7A&t=742s)
@@ -21,9 +21,11 @@ TASKS:
 		[ ] use 3D textures instead of 2D textures
 			- after this step, everything should look the same
 		[ ] calculate a wind sim for the wind texture every frame
+			[ ] radius parameter should be gone, instead the fading multiplier can be changed by the keyboard input
 	[ ] make wind texture format rgb32f instead of rgba32f. See why u cant if u cant.
 	[ ] what is that hwnd doing in renderPass classes init function argument?!
-
+	[ ] use squared distance instead of distance for distance calculation in shader
+[ ] make spiral wind
 
 - a little wind effect might be great (white lines according to the wind direction and position)
 - what else? I want to say "I have done these based on these talks or articles"
