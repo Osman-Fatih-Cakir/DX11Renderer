@@ -16,7 +16,7 @@ TASKS:
 	[+] Q for switch between omni and directional
 	[ ] Simulate wind
 		[+] use two textures, calculate on one texture while giving the other texture to render
-		[ ] use 2D textures and apply the same calculations to that, use the texture for rendering
+		[+] use 2D textures and apply the same calculations to that, use the texture for rendering
 			- after this step, everything should look the same
 		[ ] use 3D textures instead of 2D textures
 			- after this step, everything should look the same
