@@ -153,7 +153,7 @@ namespace DX11Renderer
 
 		// dispatch call
 		//todo deviceContext->Dispatch(16, 1, 1);
-		deviceContext->Dispatch(1, 1, 1);
+		deviceContext->Dispatch(2, 2, 1);
 
 		// deattach the resources from gpu
 		ID3D11ShaderResourceView* srvNull[2] = { nullptr, nullptr };
