@@ -1,18 +1,11 @@
 
-#define GRASS_COUNT_PER_EDGE 20
-#define GRASS_COUNT_PER_TILE GRASS_COUNT_PER_EDGE * GRASS_COUNT_PER_EDGE
-#define MIN_TILE_MIN_WORLD_POS_X -10
-#define MAX_TILE_MAX_WORLD_POS_X 26
-#define MIN_TILE_MIN_WORLD_POS_Z -14
-#define MAX_TILE_MAX_WORLD_POS_Z 14
-#define RADIUS 2.0f
+#define GRASS_COUNT_PER_TILE 20
 
 #define WIND_TEXTURE_WIDTH 64
 #define WIND_TEXTURE_HEIGHT 64
 #define WIND_TEXTURE_DEPTH 16
 
-Texture2D noiseTexture : register(t0);
-Texture2D windTexture : register(t1);
+Texture2D windTexture : register(t0);
 SamplerState samplerState : register(s0);
 
 cbuffer PerFrameBuffer : register(b0)
@@ -23,10 +16,6 @@ cbuffer PerFrameBuffer : register(b0)
   // another constant buffer called PerTileBuffer can be used for below
   // but this will to do the trick for now
   float4 tilePosition;
-  float2 mouseXZ;
-  uint2 tileCoord;
-  uint time;
-  uint windType; // 0: directional, 1: omni
 };
 
 cbuffer PerSceneBuffer : register(b1)

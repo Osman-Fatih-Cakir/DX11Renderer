@@ -14,12 +14,6 @@ namespace DX11Renderer
 		{
 			return false;
 		}
-		
-		result = InitNoiseTexture(device, deviceContext);
-		if (!result)
-		{
-			return false;
-		}
 
 		result = InitBuffers(device, deviceContext);
 		if (!result)
@@ -67,18 +61,11 @@ namespace DX11Renderer
 			m_vertexShader->Release();
 			m_vertexShader = nullptr;
 		}
-
-		if (m_noiseTexture)
-		{
-			m_noiseTexture->Shutdown();
-		}
 	}
 
-	bool GrassRenderPass::Render(
-		ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time, const XMFLOAT2& mouseXZ,
-		const XMFLOAT3& camPos, UINT windType, ID3D11ShaderResourceView* windTextureView)
+	bool GrassRenderPass::Render(ID3D11DeviceContext* deviceContext, UINT indexCount, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMFLOAT4& tilePos, ID3D11ShaderResourceView* windTextureView)
 	{
-		bool result = SetParameters(deviceContext, viewMatrix, projectionMatrix, tileCoord, tilePos, time, mouseXZ, camPos, windType, windTextureView);
+		bool result = SetParameters(deviceContext, viewMatrix, projectionMatrix, tilePos, windTextureView);
 		if (!result)
 		{
 			return false;
@@ -248,14 +235,6 @@ namespace DX11Renderer
 		return true;
 	}
 
-	bool GrassRenderPass::InitNoiseTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
-	{
-		if (m_noiseTexture == nullptr)
-			m_noiseTexture = new Texture();
-
-		return m_noiseTexture->Init(device, deviceContext, "..\\..\\DX11Renderer\\Resources\\Textures\\perlinNoise256x256RGB.tga");
-	}
-
 	void GrassRenderPass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename)
 	{
 		char* compileErrors = (char*)(errorMessage->GetBufferPointer());
@@ -275,9 +254,7 @@ namespace DX11Renderer
 		errorMessage = nullptr;
 	}
 
-	bool GrassRenderPass::SetParameters(
-		ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMUINT2& tileCoord, const XMFLOAT4& tilePos, UINT time, const XMFLOAT2& mouseXZ,
-		const XMFLOAT3& camPos, UINT windType, ID3D11ShaderResourceView* windTextureView)
+	bool GrassRenderPass::SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMFLOAT4& tilePos, ID3D11ShaderResourceView* windTextureView)
 	{
 		HRESULT result;
 
@@ -296,10 +273,6 @@ namespace DX11Renderer
 		dataPtr->view = viewMatrix;
 		dataPtr->projection = projectionMatrix;
 		dataPtr->tilePos = tilePos;
-		dataPtr->tileCoord = tileCoord;
-		dataPtr->time = time;
-		dataPtr->mouseWorldPosXZ = mouseXZ;
-		dataPtr->windType = windType;
 
 		// Unlock the constant buffer.
 		deviceContext->Unmap(m_cbPerFrame, 0);
@@ -307,8 +280,8 @@ namespace DX11Renderer
 		ID3D11Buffer* vsConstBuffers[2] = { m_cbPerFrame, m_cbPerScene };
 		deviceContext->VSSetConstantBuffers(0, 2, vsConstBuffers);
 
-		ID3D11ShaderResourceView* textureViews[2] = { m_noiseTexture->GetTextureView(), windTextureView };
-		deviceContext->VSSetShaderResources(0, 2, textureViews);
+		ID3D11ShaderResourceView* textureViews[1] = { windTextureView };
+		deviceContext->VSSetShaderResources(0, 1, textureViews);
 
 		return true;
 	}
