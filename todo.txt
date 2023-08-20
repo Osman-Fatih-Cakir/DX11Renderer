@@ -18,7 +18,7 @@ TASKS:
 		[+] use two textures, calculate on one texture while giving the other texture to render
 		[+] use 2D textures and apply the same calculations to that, use the texture for rendering
 			- after this step, everything should look the same
-		[ ] use 3D textures instead of 2D textures
+		[+] use 3D textures instead of 2D textures
 			- after this step, everything should look the same
 		[ ] calculate a wind sim for the wind texture every frame
 			[ ] radius parameter should be gone, instead the fading multiplier can be changed by the keyboard input

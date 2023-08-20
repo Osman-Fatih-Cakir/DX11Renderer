@@ -184,32 +184,30 @@ namespace DX11Renderer
 	bool GPUTexture::Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, UINT width, UINT height, UINT depth)
 	{
 		float* data = new float[width * height * 4];
-		//ZeroMemory(data, width * height * 4 * 4); // float is 4 bytes
+		ZeroMemory(data, width * height * 4 * 4); // float is 4 bytes
 
 		// testing
-		
+		/*
 		for (UINT i = 0; i < width * height * 4; ++i)
 		{
 			data[i] = (float)i;
 		}
-		
+		*/
 
 		HRESULT hResult;
 
-		D3D11_TEXTURE2D_DESC textureDesc;
+		D3D11_TEXTURE3D_DESC textureDesc;
 		textureDesc.Height = height;
 		textureDesc.Width = width;
+		textureDesc.Depth = depth;
 		textureDesc.MipLevels = 1;
-		textureDesc.ArraySize = 1;
 		textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-		textureDesc.SampleDesc.Count = 1;
-		textureDesc.SampleDesc.Quality = 0;
 		textureDesc.Usage = D3D11_USAGE_DEFAULT;
 		textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 		textureDesc.CPUAccessFlags = 0;
 		textureDesc.MiscFlags = 0;
 
-		hResult = device->CreateTexture2D(&textureDesc, NULL, &m_texture);
+		hResult = device->CreateTexture3D(&textureDesc, NULL, &m_texture);
 		if (FAILED(hResult))
 		{
 			return false;
@@ -217,15 +215,16 @@ namespace DX11Renderer
 
 		//UINT rowPitch = (width * 3) * 4; // 32 bits floating point and rgb (3 channels per texel)
 		UINT rowPitch = width * 4 * 4; // 32 bits floating point and rgba (4 channels per texel)
+		UINT depthPitch = depth * 4 * 4;
 
-		// Copy the targa image data into the texture.
-		deviceContext->UpdateSubresource(m_texture, 0, NULL, data, rowPitch, 0);
+		// Copy the image data into the gpu memory
+		deviceContext->UpdateSubresource(m_texture, 0, NULL, data, rowPitch, depthPitch);
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 		srvDesc.Format = textureDesc.Format;
-		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MostDetailedMip = 0;
-		srvDesc.Texture2D.MipLevels = 1;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
+		srvDesc.Texture3D.MostDetailedMip = 0;
+		srvDesc.Texture3D.MipLevels = 1;
 
 		// Create the shader resource view for the texture.
 		hResult = device->CreateShaderResourceView(m_texture, &srvDesc, &m_srv);
@@ -237,8 +236,10 @@ namespace DX11Renderer
 		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
 		ZeroMemory(&uavDesc, sizeof(uavDesc));
 		uavDesc.Format = textureDesc.Format;
-		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
-		uavDesc.Texture2D.MipSlice = 0;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
+		uavDesc.Texture3D.MipSlice = 0;
+		uavDesc.Texture3D.FirstWSlice = 0;
+		uavDesc.Texture3D.WSize = depth;
 
 		hResult = device->CreateUnorderedAccessView(m_texture, &uavDesc, &m_uav);
 		if (FAILED(hResult))

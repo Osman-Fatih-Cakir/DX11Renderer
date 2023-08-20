@@ -16,8 +16,8 @@
 #define RADIUS 10.0f
 
 Texture2D<float4> NoiseTexture : register(t0);
-Texture2D<float4> PrevState : register(t1);
-RWTexture2D<float4> NextState : register(u0);
+Texture3D<float4> PrevState : register(t1);
+RWTexture3D<float4> NextState : register(u0);
 
 cbuffer CBuffer : register(b0)
 {
@@ -61,7 +61,7 @@ float3 CalcOmniWind(uint2 coord, int2 worldCoord, float2 mouseXZ, float distance
 void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
   float4 wind = { 0.0f, 0.0f, 0.0f, 0.0f };
-  uint2 coord = { dispatchThreadID.x, dispatchThreadID.y };
+  uint3 coord = dispatchThreadID;
 
   // the 64x64x16 sized wind texture represents the wind simulation for the coordinates {x:(-32,+32), y:(-32,+32), z:(0,+16)}
   int2 worldCoord = { dispatchThreadID.x - (WIND_TEXTURE_WIDTH / 2), dispatchThreadID.y - (WIND_TEXTURE_HEIGHT / 2) };
@@ -74,11 +74,11 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
 
     if (windType == 0) // directional
     {
-      wind.xyz = CalcDirectionalWind(coord, distanceFade);
+      wind.xyz = CalcDirectionalWind(coord.xy, distanceFade);
     }
     else // if windType == 1 // omni-directional
     {
-      wind.xyz = CalcOmniWind(coord, worldCoord, mouseXZ, distanceFade);
+      wind.xyz = CalcOmniWind(coord.xy, worldCoord, mouseXZ, distanceFade);
     }
   }
   NextState[coord] = wind;

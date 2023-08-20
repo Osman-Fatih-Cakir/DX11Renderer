@@ -5,7 +5,7 @@
 #define WIND_TEXTURE_HEIGHT 64
 #define WIND_TEXTURE_DEPTH 16
 
-Texture2D windTexture : register(t0);
+Texture3D windTexture : register(t0);
 SamplerState samplerState : register(s0);
 
 cbuffer PerFrameBuffer : register(b0)
@@ -56,7 +56,7 @@ PixelInputType Main(VertexInputType input, uint instanceID : SV_InstanceID)
 
   float x = (instanceWorldPos.x + tilePosition.x + (WIND_TEXTURE_WIDTH / 2)) / WIND_TEXTURE_WIDTH;
   float z = (instanceWorldPos.z + tilePosition.z + (WIND_TEXTURE_HEIGHT / 2)) / WIND_TEXTURE_HEIGHT;
-  float2 coord = { x,z };
+  float3 coord = { x,z, 0.0f };
   float3 wind = windTexture.SampleLevel(samplerState, coord, 0).xyz * height * height;
   float4 windedWorldPos = worldPos;
   windedWorldPos.xyz += wind;

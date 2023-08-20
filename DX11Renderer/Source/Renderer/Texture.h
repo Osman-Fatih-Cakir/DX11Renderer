@@ -45,8 +45,8 @@ namespace DX11Renderer
 	* Empty gpu texture
 	* 
 	* Texture Desc:
-	* R32 G32 B32 - floating point
-	* 2D texture
+	* R32 G32 B32 A32 - floating point
+	* 3D texture
 	* 
 	* see details in Init function
 	*/
@@ -67,7 +67,7 @@ namespace DX11Renderer
 		}
 
 	private:
-		ID3D11Texture2D* m_texture = nullptr;
+		ID3D11Texture3D* m_texture = nullptr;
 		ID3D11ShaderResourceView* m_srv = nullptr;
 		ID3D11UnorderedAccessView* m_uav = nullptr;
 	};
