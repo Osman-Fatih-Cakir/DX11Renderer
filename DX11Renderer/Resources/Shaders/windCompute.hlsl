@@ -13,7 +13,7 @@
 
 #define NOISE_TEXTURE_SIZE 256
 
-#define RADIUS 20.0f
+#define RADIUS 10.0f
 
 Texture2D<float4> NoiseTexture : register(t0);
 Texture2D<float4> PrevState : register(t1);
@@ -28,8 +28,7 @@ cbuffer CBuffer : register(b0)
 
 float3 SampleNoiseTexture(uint2 coord, float speed)
 {
-  speed /= 10000.0f;
-  uint timeFactor = time * (uint)speed;
+  uint timeFactor = time * speed;
   uint2 noiseTexCoord = uint2((coord.x + timeFactor.x) % NOISE_TEXTURE_SIZE, coord.y);
   float3 noise = NoiseTexture[noiseTexCoord];
 
@@ -38,33 +37,25 @@ float3 SampleNoiseTexture(uint2 coord, float speed)
 
 float3 CalcDirectionalWind(uint2 coord, float distanceFade)
 {
-  float3 noise = SampleNoiseTexture(coord, 1.0f);
+  float3 noise = SampleNoiseTexture(coord, 0.0025f);
   noise *= 0.8f;
   float3 wind = noise * distanceFade;
 
   return wind;
 }
 
-/*
-float3 CalcOmniWind(float4 worldPos, float4 instanceWorldPos, float4 tilePos, float height, float2 mouseXZ, float distanceFade)
+float3 CalcOmniWind(uint2 coord, int2 worldCoord, float2 mouseXZ, float distanceFade)
 {
-  float3 noise = SampleNoiseTexture(instanceWorldPos, tilePos, 1.0f);
-
+  float3 noise = SampleNoiseTexture(coord, 0.0025f);
   noise *= 0.4f;
-  float3 windedWorldPos = worldPos.xyz;
-
-  float3 dir = { mouseXZ.x - (worldPos.x + tilePos.x), 1.0f, mouseXZ.y - (worldPos.z + tilePos.z) };
+  float3 dir = { mouseXZ.x - worldCoord.x, 0.1f, mouseXZ.y - worldCoord.y };
   dir = normalize(dir);
   dir *= -abs(noise);
 
-  windedWorldPos += dir * height * height * distanceFade;
+  float3 wind = dir * distanceFade;
 
-  // avoid stretching
-  windedWorldPos = RepairStretch(instanceWorldPos.xyz, worldPos.xyz, windedWorldPos);
-
-  return windedWorldPos;
+  return wind;
 }
-*/
 
 [numthreads(16, 16, 1)]
 void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
@@ -80,7 +71,15 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
   if (dist < RADIUS)
   {
     float distanceFade = 1.0f - (dist / RADIUS);
-    wind.xyz = CalcDirectionalWind(coord, distanceFade);
+
+    if (windType == 0) // directional
+    {
+      wind.xyz = CalcDirectionalWind(coord, distanceFade);
+    }
+    else // if windType == 1 // omni-directional
+    {
+      wind.xyz = CalcOmniWind(coord, worldCoord, mouseXZ, distanceFade);
+    }
   }
   NextState[coord] = wind;
 }
