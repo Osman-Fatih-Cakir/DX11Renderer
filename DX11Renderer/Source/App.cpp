@@ -169,7 +169,7 @@ namespace DX11Renderer
 			{
 				const XMFLOAT4 tilePos = { -8.0f + i * 4, 0.0f, -12.0f + j * 4, 0.0f };
 
-				result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tilePos, m_windComputePass->GetWindTexture()->GetSRV());
+				result = m_grassRenderPass->Render(m_renderer->GetDeviceContext(), m_grassMesh->GetIndexCount(), viewMatrix, projectionMatrix, tilePos, m_windComputePass->GetWindFlowMap()->GetSRV());
 				if (!result)
 				{
 					return false;

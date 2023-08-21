@@ -16,8 +16,7 @@
 #define RADIUS 10.0f
 
 Texture2D<float4> NoiseTexture : register(t0);
-Texture3D<float4> PrevState : register(t1);
-RWTexture3D<float4> NextState : register(u0);
+RWTexture3D<float4> WindFlowMap : register(u0);
 
 cbuffer CBuffer : register(b0)
 {
@@ -81,5 +80,5 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
       wind.xyz = CalcOmniWind(coord.xy, worldCoord, mouseXZ, distanceFade);
     }
   }
-  NextState[coord] = wind;
+  WindFlowMap[coord] = wind;
 }

@@ -15,9 +15,9 @@ namespace DX11Renderer
 		bool Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, HWND hwnd);
 		void Shutdown();
 		bool ExecuteComputation(ID3D11DeviceContext* deviceContext, const XMFLOAT2& mouseXZ, UINT totalTime, UINT windType);
-		inline GPUTexture* GetWindTexture()
+		inline GPUTexture* GetWindFlowMap()
 		{
-			return m_readTex1WriteTex2 ? m_windComputeTexture1 : m_windComputeTexture2;
+			return m_windFlowMap;
 		}
 
 	private:
@@ -39,8 +39,7 @@ namespace DX11Renderer
 		};
 
 		ID3D11ComputeShader* m_computeShader = nullptr;
-		GPUTexture* m_windComputeTexture1 = nullptr;
-		GPUTexture* m_windComputeTexture2 = nullptr;
+		GPUTexture* m_windFlowMap = nullptr;
 		Texture* m_noiseTexture = nullptr;
 
 		ID3D11Buffer* m_cBuffer= nullptr;
