@@ -1,9 +1,3 @@
-Goal:
-- Sphere shaped motors
-- Directional, omni-directional, spiral
-- Wind reciever parameters
-(https://www.youtube.com/watch?v=MKX45_riWQA&t=627s)
-(https://www.youtube.com/watch?v=dDgyBKkSf7A&t=742s)
 
 TASKS:
 [ ] wind simulation
@@ -19,41 +13,26 @@ TASKS:
 		[+] use 2D textures and apply the same calculations to that, use the texture for rendering
 			- after this step, everything should look the same
 		[+] use 3D textures instead of 2D textures
-			- after this step, everything should look the same
-		[ ] calculate a wind sim for the wind texture every frame
-			[ ] radius parameter should be gone, instead the fading multiplier can be changed by the keyboard input
-[ ] make spiral wind
-[ ] make wind texture format rgb32f instead of rgba32f. See why u cant if u cant.
-[ ] what is that hwnd doing in renderPass classes init function argument?!
-[ ] use squared distance instead of distance for distance calculation in shader
-[ ] in tech talk, they make the wind direction by translating around the noise texture in different ways.
-	I calculate a direction and apply it which is not a great idea since the normalized vector y is defined by a constant.
-	So make it work.
+			- after this step, everything should look the seamlessly
+		[ ] scratch out the ping pong textures
+		[ ] make radius change with key input
+	[ ] make spiral wind
+	[ ] make wind texture format rgb32f instead of rgba32f. See why u cant if u cant.
+	[ ] what is that hwnd doing in renderPass classes init function argument?!
+	[ ] use squared distance instead of distance for distance calculation in shader
+	[ ] in tech talk, they make the wind direction by translating around the noise texture in different ways.
+		I calculate a direction and apply it which is not a great idea since the normalized vector y is defined by a constant.
+		So make it work.
+	[ ] Create the best visual and show the outputs (make a Youtube video and link it in Readme)
+[ ] Next
+	- make the bending grasses with bezier curves and wind as Ghost of Tsushima grass talk
+	- terrain generation and grass on top of it
+	- sky rendering and lighting
 
 - a little wind effect might be great (white lines according to the wind direction and position)
 - what else? I want to say "I have done these based on these talks or articles"
-
 
 BUGS:
 [ ] wind noise cuts after some time (the noise should work seamlessly)
 [ ] when vsync is active, input is lagging
 [ ] remove the old pipeline
-
-OPTIONALS:
-[ ] compute shaders
-	- ? wind simulation
-	- ? cloud rendering
-	- ? wave rendering
-[ ] real-time terrain rendering
-[ ] calculate MVP matrix on CPU
-[ ] create a 2D terrain using tiles
-[ ] frustum culling for tiles
-[ ] ? occlusion culling
-[ ] ambient occlusion (render to texture)
-	- I think grass rendering would benefit more from ambent occlusion than shadows.
-		but if it is not enough, go for shadows. It can be costly too, so may just scratch out or disable
-		and find a way to show bottom of grasses darker(gradiently darker).
-	- lighting with forward rendering is not convinient since the scenes will consist of a lot of meshes.
-		so go for deferred if u want to achieve this.	
-[ ] sun light
-[ ] shadow
