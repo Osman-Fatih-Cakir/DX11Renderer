@@ -26,6 +26,9 @@ TASKS:
 [ ] make wind texture format rgb32f instead of rgba32f. See why u cant if u cant.
 [ ] what is that hwnd doing in renderPass classes init function argument?!
 [ ] use squared distance instead of distance for distance calculation in shader
+[ ] in tech talk, they make the wind direction by translating around the noise texture in different ways.
+	I calculate a direction and apply it which is not a great idea since the normalized vector y is defined by a constant.
+	So make it work.
 
 - a little wind effect might be great (white lines according to the wind direction and position)
 - what else? I want to say "I have done these based on these talks or articles"

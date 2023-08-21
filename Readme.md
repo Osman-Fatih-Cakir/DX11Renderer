@@ -6,7 +6,7 @@ A wind simulator prototype inspired from God of War wind and vegetation talks.
 (https://www.youtube.com/watch?v=MKX45_riWQA)
 
 The code is not awesome. It is for prototyping some techniques and learning DX11.
-But I am open to feedback for improving the visuals.
+I am open to feedback to improve the visuals or performance.
 
 Read todo.txt for a glimpse of my plans about this project.
 

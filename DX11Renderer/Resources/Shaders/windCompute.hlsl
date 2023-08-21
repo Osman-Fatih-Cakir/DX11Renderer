@@ -29,7 +29,7 @@ cbuffer CBuffer : register(b0)
 float3 SampleNoiseTexture(uint2 coord, float speed)
 {
   uint timeFactor = time * speed;
-  uint2 noiseTexCoord = uint2((coord.x + timeFactor.x) % NOISE_TEXTURE_SIZE, coord.y);
+  uint2 noiseTexCoord = uint2((coord.x + timeFactor) % NOISE_TEXTURE_SIZE, (coord.y + timeFactor) % NOISE_TEXTURE_SIZE);
   float3 noise = NoiseTexture[noiseTexCoord];
 
   return noise;
