@@ -24,9 +24,8 @@ TASKS:
 			- after this step, everything should look the seamlessly
 		[+] scratch out the ping pong textures
 		[+] get back double buffer for wind texture
-		[ ] different directions for directional wind
-			-	in tech talk, they make the wind direction by translating around the noise texture in different ways.
-			I calculate a direction and apply it which is not a great idea since the normalized vector y is defined by a constant. So make it work.
+		[ ] in tech talk, the direction of the wind changes the sampling direction of the noise texture and
+			it works. What?? How?!
 		[ ] movement wind with calculating the direction of the wind using deltaMouseXZ
 		[ ] make spiral wind
 	[+] use squared distance instead of distance for distance calculation in shader

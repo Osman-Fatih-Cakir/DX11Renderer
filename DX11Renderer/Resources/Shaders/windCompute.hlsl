@@ -58,6 +58,15 @@ float3 CalcOmniWind(uint2 coord, int2 worldCoord, float2 mouseXZ)
   return wind;
 }
 
+float3 CalcMovementWind(uint2 coord, float3 windDir)
+{
+  float3 noise = SampleNoiseTexture(coord, 0.0025f);
+  noise *= 0.6f;
+  float3 wind = normalize(windDir) * noise;
+
+  return wind;
+}
+
 /* todo
 float CalcMovementWindMultiplier(float lastVal, float fadeSpeed)
 {
@@ -84,7 +93,8 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
   
   if (windType == 0) // directional
   {
-    wind.xyz = CalcDirectionalWind(coord.xy);
+    float3 windDir = { 1.0f, 1.0f, 1.0f };
+    wind.xyz = CalcDirectionalWind(coord.xy, windDir);
   }
   else if (windType == 1) // omni-directional
   {
@@ -96,7 +106,9 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
   }
   else // if windType == 3 // movement wind
   {
-    //todo
+    // todo this will calculate deltaMouseXZ for dir
+    float3 windDir = { 0.0f, 1.0f, 1.0f };
+    wind.xyz = CalcMovementWind(coord.xy, windDir);
   }
 
   float2 rad = { (float)worldCoord.x - mouseXZ.x, (float)worldCoord.y - mouseXZ.y };
