@@ -3,8 +3,9 @@ TARGETS:
 1- use omni-directional wind for wake motors (motion as wind)
 2- make stormy winds if we can not achieve this yet (more aggressive looking wind)
 3- spiral wind
+4- write under the title "How Things Work" on Readme file
 Showcase when here
-4- solve wind direction for directional wind and use it for every other wind type
+5- solve wind direction for directional wind and use it for every other wind type
 
 TASKS:
 [ ] wind simulation
@@ -22,20 +23,19 @@ TASKS:
 		[+] use 3D textures instead of 2D textures
 			- after this step, everything should look the seamlessly
 		[+] scratch out the ping pong textures
-		[ ] different directions for directional wind
-			-	in tech talk, they make the wind direction by translating around the noise texture in different ways.
-			I calculate a direction and apply it which is not a great idea since the normalized vector y is defined by a constant. So make it work.
-	[ ] grass movements around mouse position (like a player walking in the grasses)
-	[ ] make spiral wind
-	[ ] make wind texture format rgb32f instead of rgba32f. See why u cant if u cant.
+		[ ] get back double buffer for wind texture
+		[ ] grass movements around mouse position (like a player walking in the grasses)
+		[ ] make spiral wind
 	[+] use squared distance instead of distance for distance calculation in shader
 	[ ] the mouse position and the center of the wind motor are slightly offsetted because of the texels of the
 		wind texture (using indices for positions on compute shader causes this). Fix it
 	[ ] Create the best visual and show the outputs (make a Youtube video and link it in Readme)
+	[ ] different directions for directional wind
+		-	in tech talk, they make the wind direction by translating around the noise texture in different ways.
+		I calculate a direction and apply it which is not a great idea since the normalized vector y is defined by a constant. So make it work.
 [ ] Next
-	- use wind sim
-	- make the bending grasses with bezier curves and wind as Ghost of Tsushima grass talk
 	- terrain generation and grass on top of it
+	- make the bending grasses with bezier curves and wind as Ghost of Tsushima grass talk
 	- sky rendering and lighting
 
 - a little wind effect might be great (white lines according to the wind direction and position)

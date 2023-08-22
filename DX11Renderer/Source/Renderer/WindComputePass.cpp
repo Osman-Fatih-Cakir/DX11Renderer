@@ -45,10 +45,16 @@ namespace DX11Renderer
 			Utils::SafeDel(m_noiseTexture);
 		}
 
-		if (m_windFlowMap)
+		if (m_windFlowMap1)
 		{
-			m_windFlowMap->Shutdown();
-			Utils::SafeDel(m_windFlowMap);
+			m_windFlowMap1->Shutdown();
+			Utils::SafeDel(m_windFlowMap1);
+		}
+
+		if (m_windFlowMap2)
+		{
+			m_windFlowMap2->Shutdown();
+			Utils::SafeDel(m_windFlowMap2);
 		}
 	}
 
@@ -112,14 +118,20 @@ namespace DX11Renderer
 	{
 		bool result;
 
-		m_windFlowMap = new GPUTexture();
+		m_windFlowMap1 = new GPUTexture();
+		m_windFlowMap2 = new GPUTexture();
 		m_noiseTexture = new Texture();
 
 		constexpr int textureWidth = 64;
 		constexpr int textureHeight = 64;
 		constexpr int textureDepth = 16;
 
-		result = m_windFlowMap->Init(device, deviceContext, textureWidth, textureHeight, textureDepth);
+		result = m_windFlowMap1->Init(device, deviceContext, textureWidth, textureHeight, textureDepth);
+		if (!result)
+		{
+			return false;
+		}
+		result = m_windFlowMap2->Init(device, deviceContext, textureWidth, textureHeight, textureDepth);
 		if (!result)
 		{
 			return false;
@@ -197,11 +209,14 @@ namespace DX11Renderer
 		ID3D11Buffer* constBuffers[1] = { m_cBuffer };
 		deviceContext->CSSetConstantBuffers(0, 1, constBuffers);
 
-		ID3D11ShaderResourceView* noiseTexView = m_noiseTexture->GetTextureView();
-		ID3D11ShaderResourceView* srvs[1] = { noiseTexView };
-		deviceContext->CSSetShaderResources(0, 1, srvs);
+		GPUTexture* readTex = m_readTex1WriteTex2 ? m_windFlowMap1 : m_windFlowMap2;
+		GPUTexture* writeTex = m_readTex1WriteTex2 ? m_windFlowMap2 : m_windFlowMap1;
 
-		ID3D11UnorderedAccessView* writeTexView = m_windFlowMap->GetUAV();
+		ID3D11ShaderResourceView* noiseTexView = m_noiseTexture->GetTextureView();
+		ID3D11ShaderResourceView* srvs[2] = { noiseTexView, readTex->GetSRV() };
+		deviceContext->CSSetShaderResources(0, 2, srvs);
+
+		ID3D11UnorderedAccessView* writeTexView = { writeTex->GetUAV() };
 		deviceContext->CSSetUnorderedAccessViews(0, 1, &writeTexView, nullptr);
 
 		return true;
@@ -216,8 +231,8 @@ namespace DX11Renderer
 		deviceContext->Dispatch(4, 4, 1);
 
 		// deattach the resources from gpu
-		ID3D11ShaderResourceView* srvNull[1] = { nullptr };
-		deviceContext->CSSetShaderResources(0, 1, srvNull);
+		ID3D11ShaderResourceView* srvNull[2] = { nullptr, nullptr };
+		deviceContext->CSSetShaderResources(0, 2, srvNull);
 
 		ID3D11UnorderedAccessView* uavNull[1] = { nullptr };
 		deviceContext->CSSetUnorderedAccessViews(0, 1, uavNull, nullptr);

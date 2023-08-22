@@ -16,3 +16,7 @@ Read todo.txt for a glimpse of my plans about this project.
 - Q : toggle wind type
 - F : toggle move around
 - WASD-Mouse : Move around
+
+
+### How Things Work:
+TODO write here the whole process that a frame does including the texture sizes and everything

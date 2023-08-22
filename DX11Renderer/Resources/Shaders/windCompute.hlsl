@@ -17,7 +17,8 @@
 #define RADIUS_SQUARE (RADIUS * RADIUS)
 
 Texture2D<float4> NoiseTexture : register(t0);
-RWTexture3D<float4> WindFlowMap : register(u0);
+Texture2D<float4> Prev_WindFlowMap : register(t1);
+RWTexture3D<float4> Next_WindFlowMap : register(u0);
 
 cbuffer CBuffer : register(b0)
 {
@@ -57,9 +58,23 @@ float3 CalcOmniWind(uint2 coord, int2 worldCoord, float2 mouseXZ, float distance
   return wind;
 }
 
+float CalcMovementWindMultiplier(float lastVal, float fadeSpeed)
+{
+  //todo
+
+  return 1.0f;
+}
+
 [numthreads(16, 16, 1)]
 void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
+  // moving wind fade calculation
+
+  //todo float fadeSpeed = 1.0f;
+  //todo wind.w = CalcMovementWindMultiplier(wind.w, fadeSpeed);
+
+  // wind transformation calculation
+
   float4 wind = { 0.0f, 0.0f, 0.0f, 0.0f };
   uint3 coord = dispatchThreadID;
 
@@ -84,6 +99,12 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
     {
       //wind.xyz = CalcCircularWind(); // TODO
     }
+
+    //todo wind.w = 1.0f;
   }
-  WindFlowMap[coord] = wind;
+
+  // apply movement wind fade
+  //todo wind.xyz *= wind.w;
+
+  Next_WindFlowMap[coord] = wind;
 }
