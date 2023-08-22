@@ -19,7 +19,7 @@ namespace DX11Renderer
 	private:
 		bool InitShaders(ID3D11Device* device, HWND hwnd, const WCHAR* vsFilename, const WCHAR* psFilename);
 		bool InitBuffers(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
-		void OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename);
+		void OutputShaderErrorMessage(ID3D10Blob* errorMessage, const WCHAR* shaderFilename);
 
 		bool SetParameters(ID3D11DeviceContext* deviceContext, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, const XMFLOAT4& tilePos, ID3D11ShaderResourceView* windTextureView);
 		void DrawCall(ID3D11DeviceContext* deviceContext, UINT indexCount);

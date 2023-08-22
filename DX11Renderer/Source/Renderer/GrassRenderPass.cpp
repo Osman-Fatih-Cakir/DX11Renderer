@@ -89,7 +89,7 @@ namespace DX11Renderer
 		{
 			if (errorMessage)
 			{
-				OutputShaderErrorMessage(errorMessage, hwnd, vsFilename);
+				OutputShaderErrorMessage(errorMessage, vsFilename);
 			}
 			else
 			{
@@ -105,7 +105,7 @@ namespace DX11Renderer
 		{
 			if (errorMessage)
 			{
-				OutputShaderErrorMessage(errorMessage, hwnd, psFilename);
+				OutputShaderErrorMessage(errorMessage, psFilename);
 			}
 			else
 			{
@@ -235,7 +235,7 @@ namespace DX11Renderer
 		return true;
 	}
 
-	void GrassRenderPass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename)
+	void GrassRenderPass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, const WCHAR* shaderFilename)
 	{
 		char* compileErrors = (char*)(errorMessage->GetBufferPointer());
 

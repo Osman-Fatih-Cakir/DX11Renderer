@@ -24,7 +24,7 @@ namespace DX11Renderer
 		bool InitShader(ID3D11Device* device, HWND hwnd, const WCHAR* csFilename);
 		bool InitWindTextures(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 		bool InitBuffers(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
-		void OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, const WCHAR* shaderFilename);
+		void OutputShaderErrorMessage(ID3D10Blob* errorMessage, const WCHAR* shaderFilename);
 
 		bool SetParameters(ID3D11DeviceContext* deviceContext, const XMFLOAT2& mouseXZ, UINT totalTime, UINT windType);
 		bool Compute(ID3D11DeviceContext* deviceContext);

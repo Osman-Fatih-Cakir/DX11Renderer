@@ -117,7 +117,7 @@ namespace DX11Renderer
 
 		if (g_inputManager->KeyClick(Key::Q))
 		{
-			m_windType = (m_windType + 1) % 2;
+			m_windType = (m_windType + 1) % 3;
 		}
 
 		if (!m_freeCameraActive)

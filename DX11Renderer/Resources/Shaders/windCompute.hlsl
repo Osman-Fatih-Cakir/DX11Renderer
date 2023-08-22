@@ -13,7 +13,8 @@
 
 #define NOISE_TEXTURE_SIZE 256
 
-#define RADIUS 10.0f
+#define RADIUS 2.0f
+#define RADIUS_SQUARE (RADIUS * RADIUS)
 
 Texture2D<float4> NoiseTexture : register(t0);
 RWTexture3D<float4> WindFlowMap : register(u0);
@@ -22,7 +23,7 @@ cbuffer CBuffer : register(b0)
 {
   float2 mouseXZ;
   uint time;
-  uint windType; // 0: directional, 1: omni
+  uint windType; // 0: directional, 1: omni, 2: circular
 }
 
 float3 SampleNoiseTexture(uint2 coord, float speed)
@@ -47,7 +48,7 @@ float3 CalcOmniWind(uint2 coord, int2 worldCoord, float2 mouseXZ, float distance
 {
   float3 noise = SampleNoiseTexture(coord, 0.0025f);
   noise *= 0.4f;
-  float3 dir = { mouseXZ.x - worldCoord.x, 0.1f, mouseXZ.y - worldCoord.y };
+  float3 dir = { mouseXZ.x - worldCoord.x, 0.0f, mouseXZ.y - worldCoord.y };
   dir = normalize(dir);
   dir *= -abs(noise);
 
@@ -66,18 +67,22 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
   int2 worldCoord = { dispatchThreadID.x - (WIND_TEXTURE_WIDTH / 2), dispatchThreadID.y - (WIND_TEXTURE_HEIGHT / 2) };
   
   float2 rad = { (float)worldCoord.x - mouseXZ.x, (float)worldCoord.y - mouseXZ.y };
-  float dist = sqrt(rad.x * rad.x + rad.y * rad.y);
-  if (dist < RADIUS)
+  float distSquare = rad.x * rad.x + rad.y * rad.y;
+  if (distSquare < RADIUS_SQUARE)
   {
-    float distanceFade = 1.0f - (dist / RADIUS);
+    float distanceFade = 1.0f - (distSquare / RADIUS_SQUARE);
 
     if (windType == 0) // directional
     {
       wind.xyz = CalcDirectionalWind(coord.xy, distanceFade);
     }
-    else // if windType == 1 // omni-directional
+    else if (windType == 1) // omni-directional
     {
       wind.xyz = CalcOmniWind(coord.xy, worldCoord, mouseXZ, distanceFade);
+    }
+    else // if windType == 2 // circular
+    {
+      //wind.xyz = CalcCircularWind(); // TODO
     }
   }
   WindFlowMap[coord] = wind;
