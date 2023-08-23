@@ -42,8 +42,9 @@ float3 SampleNoiseTexture(uint2 coord, float speed)
 
 float3 CalcDirectionalWind(uint2 coord, float3 windDir)
 {
-  float3 noise = SampleNoiseTexture(coord, 0.0025f);
-  noise *= 3.0f;
+  float3 noise = SampleNoiseTexture(coord, 0.0035f);
+  noise *= 4.0f;
+  noise.y *= 0.5f;
   float3 wind = normalize(windDir) * noise;
 
   return wind;
@@ -111,13 +112,13 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
   float distSquare = rad.x * rad.x + rad.y * rad.y;
   bool insideRadius = distSquare < RADIUS_SQUARE;
 
-  if (windType == 0 && insideRadius) // directional
+  if (windType == 0/* && insideRadius*/) // directional
   {
     float3 windDir = { 1.0f, 1.0f, 1.0f };
     wind.xyz = CalcDirectionalWind(coord.xy, windDir);
 
-    float distanceFade = 1.0f - (distSquare / RADIUS_SQUARE);
-    wind.xyz *= distanceFade;
+    //float distanceFade = 1.0f - (distSquare / RADIUS_SQUARE);
+    //wind.xyz *= distanceFade;
   }
   else if (windType == 1 && insideRadius) // omni-directional
   {

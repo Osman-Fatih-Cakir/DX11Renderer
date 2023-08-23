@@ -12,15 +12,13 @@ TARGETS:
 Showcase when here
 
 TASKS:
-[ ] wind simulation
+[+] wind simulation
 	[+] calculate 2D noise texture (or just steal a texture from internet :) )
 	[+] using noise texture, apply translating of the grasses, care stretching as in the talk
 	[+] omni-directional wind around mouse pos
 	[+] radius around the mouse pos
-	[ ] stretch avoid calculation makes the grasses thinner, allow a bit of stretching based on the
-		speed and etc.
 	[+] Q for switch between omni and directional
-	[ ] Simulate wind
+	[+] Simulate wind
 		[+] use two textures, calculate on one texture while giving the other texture to render
 		[+] use 2D textures and apply the same calculations to that, use the texture for rendering
 			- after this step, everything should look the same
@@ -31,11 +29,12 @@ TASKS:
 		[ ] in tech talk, the direction of the wind changes the sampling direction of the noise texture and
 			it works. What?? How?!
 		[+] movement wind with calculating the direction of the wind using deltaMouseXZ
-		[ ] make spiral wind
+		[+] make spiral wind
 	[+] use squared distance instead of distance for distance calculation in shader
 	[+] the mouse position and the center of the wind motor are slightly offsetted because of the texels of the
 		wind texture (using indices for positions on compute shader causes this). Fix it
-	[ ] Create the best visual and show the outputs (make a Youtube video and link it in Readme)
+
+[ ] Create the best visual and show the outputs (make a Youtube video and link it in Readme)
 [ ] Next
 	- ?wind sim
 		[ ] make a force texture
