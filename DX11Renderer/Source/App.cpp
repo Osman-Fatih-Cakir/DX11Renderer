@@ -121,7 +121,7 @@ namespace DX11Renderer
 		}
 
 		// TODO
-		m_windType = 3;
+		//m_windType = 3;
 
 		if (!m_freeCameraActive)
 			m_mouseXY = { g_inputManager->RelMouseX(), g_inputManager->RelMouseY() };

@@ -91,12 +91,12 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
   float distSquare = rad.x * rad.x + rad.y * rad.y;
   bool insideRadius = distSquare < RADIUS_SQUARE;
 
-  if (windType == 0) // directional
+  if (windType == 0 && insideRadius) // directional
   {
     float3 windDir = { 1.0f, 1.0f, 1.0f };
     wind.xyz = CalcDirectionalWind(coord.xy, windDir);
   }
-  else if (windType == 1) // omni-directional
+  else if (windType == 1 && insideRadius) // omni-directional
   {
     wind.xyz = CalcOmniWind(coord.xy, worldCoord, mouseXZ);
   }
