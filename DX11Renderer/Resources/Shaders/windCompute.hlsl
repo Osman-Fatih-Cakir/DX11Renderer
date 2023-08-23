@@ -43,7 +43,7 @@ float3 SampleNoiseTexture(uint2 coord, float speed)
 float3 CalcDirectionalWind(uint2 coord, float3 windDir)
 {
   float3 noise = SampleNoiseTexture(coord, 0.0025f);
-  noise *= 0.6f;
+  noise *= 3.0f;
   float3 wind = normalize(windDir) * noise;
 
   return wind;
@@ -52,7 +52,7 @@ float3 CalcDirectionalWind(uint2 coord, float3 windDir)
 float3 CalcOmniWind(uint2 coord, int2 worldCoord, float2 mouseXZ)
 {
   float3 noise = SampleNoiseTexture(coord, 0.0025f);
-  noise *= 0.6f;
+  noise *= 2.0f;
   float3 dir = { mouseXZ.x - worldCoord.x, 0.0f, mouseXZ.y - worldCoord.y };
   dir = normalize(dir);
   dir *= -abs(noise);
@@ -62,10 +62,26 @@ float3 CalcOmniWind(uint2 coord, int2 worldCoord, float2 mouseXZ)
   return wind;
 }
 
+float3 CalcSpiralWind(uint2 coord, int2 worldCoord, float2 mouseXZ, float distanceFromMouseCenter)
+{
+  float3 noise = SampleNoiseTexture(coord, 0.01f);
+  noise *= 2.0f;
+  float3 mouseToWorld = { worldCoord.x - mouseXZ.x, noise.y, worldCoord.y - mouseXZ.y };
+  mouseToWorld = normalize(mouseToWorld);
+  const float3 yAxis = { 0.0f, 1.0f, 0.0f };
+  float3 windDir = cross(yAxis, mouseToWorld);
+  windDir = normalize(windDir);
+  const float power = 1.0f;
+  const float outDirectionMultiplier = 1.0f;
+  float3 wind = mouseToWorld * outDirectionMultiplier + windDir * distanceFromMouseCenter * power * abs(noise);
+
+  return wind;
+}
+
 float3 CalcMovementWind(uint2 coord, int2 worldCoord, float2 mouseXZ, float3 windDir)
 {
   float3 noise = SampleNoiseTexture(coord, 0.0025f);
-  noise *= 0.6f;
+  noise *= 3.0f;
 
   float3 dir = { worldCoord.x - mouseXZ.x, windDir.y, worldCoord.y - mouseXZ.y };
   dir = normalize(dir);
@@ -110,9 +126,13 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
     float distanceFade = 1.0f - (distSquare / RADIUS_SQUARE);
     wind.xyz *= distanceFade;
   }
-  else if (windType == 2) // circular
+  else if (windType == 2 && insideRadius) // spiral wind
   {
-    //wind.xyz = CalcCircularWind(); // TODO
+    const float distance = sqrt(distSquare);
+    wind.xyz = CalcSpiralWind(coord.xy, worldCoord, mouseXZ, distance);
+
+    float distanceFade = 1.0f - (distance / RADIUS);
+    wind.xyz *= distanceFade;
   }
   else // if windType == 3 // movement wind
   {

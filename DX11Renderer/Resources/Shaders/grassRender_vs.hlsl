@@ -52,7 +52,8 @@ PixelInputType Main(VertexInputType input, uint instanceID : SV_InstanceID)
   float4 worldPos = mul(input.position, worldMatrix);
   float4 instanceWorldPos = worldMatrix[3];
 
-  float height = worldPos.y / 0.6f;
+  // max vertex y is 0.06 for this grass blade object
+  float height = worldPos.y / 1.2f;
 
   float x = (0.5f + instanceWorldPos.x + tilePosition.x + (WIND_TEXTURE_WIDTH / 2)) / WIND_TEXTURE_WIDTH;
   float z = (0.5f + instanceWorldPos.z + tilePosition.z + (WIND_TEXTURE_HEIGHT / 2)) / WIND_TEXTURE_HEIGHT;
@@ -63,7 +64,7 @@ PixelInputType Main(VertexInputType input, uint instanceID : SV_InstanceID)
   windedWorldPos.xyz = RepairStretch(instanceWorldPos.xyz, worldPos.xyz, windedWorldPos.xyz);
   windedWorldPos.xyz += tilePosition;
 
-  output.position = mul(mul(windedWorldPos, viewMatrix), projectionMatrix); // TODO create a mvp matrix on cpu
+  output.position = mul(mul(windedWorldPos, viewMatrix), projectionMatrix);
   output.height = height;
 
   return output;
