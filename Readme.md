@@ -1,4 +1,4 @@
-# DX11Renderer
+# DX11 Wind Simulation Prototype
 
 A wind simulation inspired from God of War wind and Ghost of Tsushima wind and grass talks.
 
