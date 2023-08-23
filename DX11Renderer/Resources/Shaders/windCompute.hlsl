@@ -13,7 +13,7 @@
 
 #define NOISE_TEXTURE_SIZE 256
 
-#define RADIUS 2.0f
+#define RADIUS 4.0f
 #define RADIUS_SQUARE (RADIUS * RADIUS)
 
 Texture2D<float4> NoiseTexture : register(t0);
@@ -23,7 +23,9 @@ RWTexture3D<float4> Next_WindFlowMap : register(u0);
 cbuffer CBuffer : register(b0)
 {
   float2 mouseXZ;
-  uint time;
+  float2 deltaMouseXZ;
+  uint time; // total time in milliseconds * 10
+  uint deltaTime; // delta time in microseconds
   uint windType; // 0: directional, 1: omni, 2: circular, 3: movement wind
 }
 
@@ -36,11 +38,11 @@ float3 SampleNoiseTexture(uint2 coord, float speed)
   return noise;
 }
 
-float3 CalcDirectionalWind(uint2 coord)
+float3 CalcDirectionalWind(uint2 coord, float3 windDir)
 {
   float3 noise = SampleNoiseTexture(coord, 0.0025f);
   noise *= 0.6f;
-  float3 wind = noise;
+  float3 wind = normalize(windDir) * noise;
 
   return wind;
 }
@@ -58,21 +60,23 @@ float3 CalcOmniWind(uint2 coord, int2 worldCoord, float2 mouseXZ)
   return wind;
 }
 
-float3 CalcMovementWind(uint2 coord, float3 windDir)
+float3 CalcMovementWind(uint2 coord, int2 worldCoord, float2 mouseXZ, float3 windDir)
 {
   float3 noise = SampleNoiseTexture(coord, 0.0025f);
   noise *= 0.6f;
-  float3 wind = normalize(windDir) * noise;
+
+  float3 dir = { worldCoord.x - mouseXZ.x, windDir.y, worldCoord.y - mouseXZ.y };
+  dir += RADIUS * windDir * 0.5f;
+
+  float3 wind = normalize(dir) * noise;
 
   return wind;
 }
 
-/* todo
 float CalcMovementWindMultiplier(float lastVal, float fadeSpeed)
 {
   return clamp(lastVal - fadeSpeed, 0.0f, 1.0f);
 }
-*/
 
 [numthreads(16, 16, 1)]
 void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
@@ -80,17 +84,13 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
   uint3 coord = dispatchThreadID;
   float4 wind = Prev_WindFlowMap[coord];
 
-  // moving wind fade calculation
-
-  //todo float fadeSpeed = 1.0f * time * 0.000000005f;
-  //todo wind.w = CalcMovementWindMultiplier(wind.w, fadeSpeed);
-  wind.w = 0.0f; //todo
-
-  // wind transformation calculation
-
   // the 64x64x16 sized wind texture represents the wind simulation for the coordinates {x:(-32,+32), y:(-32,+32), z:(0,+16)}
   int2 worldCoord = { dispatchThreadID.x - (WIND_TEXTURE_WIDTH / 2), dispatchThreadID.y - (WIND_TEXTURE_HEIGHT / 2) };
   
+  float2 rad = { (float)worldCoord.x - mouseXZ.x, (float)worldCoord.y - mouseXZ.y };
+  float distSquare = rad.x * rad.x + rad.y * rad.y;
+  bool insideRadius = distSquare < RADIUS_SQUARE;
+
   if (windType == 0) // directional
   {
     float3 windDir = { 1.0f, 1.0f, 1.0f };
@@ -106,22 +106,34 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
   }
   else // if windType == 3 // movement wind
   {
-    // todo this will calculate deltaMouseXZ for dir
-    float3 windDir = { 0.0f, 1.0f, 1.0f };
-    wind.xyz = CalcMovementWind(coord.xy, windDir);
+    // movement wind fade calculation
+    float fadeSpeed = deltaTime * 0.000002f;
+    wind.w = CalcMovementWindMultiplier(wind.w, fadeSpeed);
+    float3 lastWindDir = Next_WindFlowMap[coord].xyz; // sample 2 previous frame data
+    float3 windDir = lastWindDir;
+
+    // wind direction
+    if (insideRadius)
+    {
+      windDir = float3(deltaMouseXZ.x, 0.0f, deltaMouseXZ.y);
+      wind.w = 1.0f;
+    }
+
+    if (wind.w > 0.01f)
+    {
+      wind.xyz = CalcMovementWind(coord.xy, worldCoord, mouseXZ, windDir);
+      wind.xyz = (wind.xyz + lastWindDir) / 2.0f;
+
+      // apply movement wind fade
+      wind.xyz *= wind.w;
+    }
   }
 
-  float2 rad = { (float)worldCoord.x - mouseXZ.x, (float)worldCoord.y - mouseXZ.y };
-  float distSquare = rad.x * rad.x + rad.y * rad.y;
-  if (distSquare < RADIUS_SQUARE)
+  if (insideRadius)
   {
     float distanceFade = 1.0f - (distSquare / RADIUS_SQUARE);
     wind.xyz *= distanceFade;
-    wind.w = 1.0f;
   }
-
-  // apply movement wind fade
-  wind.xyz *= wind.w;
 
   Next_WindFlowMap[coord] = wind;
 }

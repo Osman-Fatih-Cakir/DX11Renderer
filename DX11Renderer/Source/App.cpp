@@ -121,12 +121,12 @@ namespace DX11Renderer
 		}
 
 		// TODO
-		//m_windType = 3;
+		m_windType = 3;
 
 		if (!m_freeCameraActive)
-			m_lastMouseXY = { g_inputManager->RelMouseX(), g_inputManager->RelMouseY() };
+			m_mouseXY = { g_inputManager->RelMouseX(), g_inputManager->RelMouseY() };
 		else
-			m_lastMouseXY = m_initRelMousePos;
+			m_mouseXY = m_initRelMousePos;
 
 		// Generate the view matrix based on the camera's position.
 		if (m_freeCameraActive)
@@ -150,9 +150,11 @@ namespace DX11Renderer
 		m_camera->GetProjectionMatrix(projectionMatrix);
 
 		// calculate mouse xz positions from projection and view matrices
-		const XMFLOAT2 mouseXZ = WorldXZFromScreenCoord(m_lastMouseXY, 0.6f, projectionMatrix, viewMatrix);
+		m_prevMouseWorldXZ = m_mouseWorldXZ;
+		m_mouseWorldXZ = WorldXZFromScreenCoord(m_mouseXY, 0.6f, projectionMatrix, viewMatrix);
+		const XMFLOAT2 deltaMouseWorldXZ = { (m_mouseWorldXZ.x - m_prevMouseWorldXZ.x) * deltaTime, (m_mouseWorldXZ.y - m_prevMouseWorldXZ.y) * deltaTime };
 
-		bool result = m_windComputePass->ExecuteComputation(m_renderer->GetDeviceContext(), mouseXZ, m_totalTime, m_windType);
+		bool result = m_windComputePass->ExecuteComputation(m_renderer->GetDeviceContext(), m_mouseWorldXZ, deltaMouseWorldXZ, (UINT)(deltaTime * 1000.0f), m_totalTime, m_windType);
 		if (!result)
 		{
 			return false;

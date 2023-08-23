@@ -31,11 +31,12 @@ namespace DX11Renderer
 		WindComputePass* m_windComputePass = nullptr;
 
 		const XMINT2 m_initRelMousePos = { 640, 320 };
-		XMINT2 m_lastMouseXY = m_initRelMousePos;
+		XMINT2 m_mouseXY = m_initRelMousePos;
+		XMFLOAT2 m_mouseWorldXZ = { 0, 0 };
+		XMFLOAT2 m_prevMouseWorldXZ = m_mouseWorldXZ;
 		bool m_freeCameraActive = false;
 		UINT m_windType = 0;
 
 		UINT m_totalTime = 0;
-
 	};
 }

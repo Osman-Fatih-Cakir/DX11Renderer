@@ -186,11 +186,17 @@ namespace DX11Renderer
 		float* data = new float[width * height * 4];
 		ZeroMemory(data, width * height * 4 * 4); // float is 4 bytes
 
-		// testing
 		/*
 		for (UINT i = 0; i < width * height * 4; ++i)
 		{
-			data[i] = (float)i;
+			if (i % 4 == 3)
+			{
+				data[i] = 0.0f;
+			}
+			else
+			{
+				data[i] = 1.0f;
+			}
 		}
 		*/
 

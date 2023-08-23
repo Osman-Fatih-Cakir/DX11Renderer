@@ -50,7 +50,7 @@ namespace DX11Renderer
 	* 
 	* see details in Init function
 	*/
-	class GPUTexture
+	class GPUTexture // TODO rename as WindTexture
 	{
 	public:
 		bool Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, UINT width, UINT height, UINT depth);

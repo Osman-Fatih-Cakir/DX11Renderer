@@ -1,11 +1,11 @@
 
+
 TARGETS:
 1- use omni-directional wind for wake motors (motion as wind)
 2- make stormy winds if we can not achieve this yet (more aggressive looking wind)
 3- spiral wind
 4- write under the title "How Things Work" on Readme file
 Showcase when here
-5- solve wind direction for directional wind and use it for every other wind type
 
 TASKS:
 [ ] wind simulation
@@ -26,7 +26,9 @@ TASKS:
 		[+] get back double buffer for wind texture
 		[ ] in tech talk, the direction of the wind changes the sampling direction of the noise texture and
 			it works. What?? How?!
-		[ ] movement wind with calculating the direction of the wind using deltaMouseXZ
+		[+] movement wind with calculating the direction of the wind using deltaMouseXZ
+		[ ] the flickering is very obvious. find a solution.
+			- In tech talk the grasses flip a lot but in the sim it seems fine. so they use WIND SIM. implement it
 		[ ] make spiral wind
 	[+] use squared distance instead of distance for distance calculation in shader
 	[ ] the mouse position and the center of the wind motor are slightly offsetted because of the texels of the

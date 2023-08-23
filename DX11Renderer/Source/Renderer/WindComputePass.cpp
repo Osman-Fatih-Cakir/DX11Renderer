@@ -1,6 +1,7 @@
 
 #include "WindComputePass.h"
 #include "../Utils/Utils.h"
+#include "MathUtils.h"
 #include <string>
 #include <fstream>
 
@@ -59,11 +60,11 @@ namespace DX11Renderer
 	}
 
 	// each call for this function will swap the texture that is being read and written
-	bool WindComputePass::ExecuteComputation(ID3D11DeviceContext* deviceContext, const XMFLOAT2& mouseXZ, UINT totalTime, UINT windType)
+	bool WindComputePass::ExecuteComputation(ID3D11DeviceContext* deviceContext, const XMFLOAT2& mouseXZ, const XMFLOAT2& deltaMouseXZ, UINT deltaTimeInMicroseconds, UINT totalTime, UINT windType)
 	{
 		bool result;
 
-		result = SetParameters(deviceContext, mouseXZ, totalTime, windType);
+		result = SetParameters(deviceContext, mouseXZ, deltaMouseXZ, deltaTimeInMicroseconds, totalTime, windType);
 		if (!result)
 		{
 			return false;
@@ -152,7 +153,7 @@ namespace DX11Renderer
 		// constant buffer
 		D3D11_BUFFER_DESC constantBufferDesc;
 		constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		constantBufferDesc.ByteWidth = sizeof(CBuffer);
+		constantBufferDesc.ByteWidth = (UINT)AlignOffset(sizeof(CBuffer), 16ULL);
 		constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		constantBufferDesc.MiscFlags = 0;
@@ -186,7 +187,10 @@ namespace DX11Renderer
 		errorMessage = nullptr;
 	}
 
-	bool WindComputePass::SetParameters(ID3D11DeviceContext* deviceContext, const XMFLOAT2& mouseXZ, UINT totalTime, UINT windType)
+#include "../Utils/Utils.h"
+#include <math.h>
+
+	bool WindComputePass::SetParameters(ID3D11DeviceContext* deviceContext, const XMFLOAT2& mouseXZ, XMFLOAT2 deltaMouseXZ, UINT deltaTimeInMicroseconds, UINT totalTime, UINT windType)
 	{
 		HRESULT result;
 
@@ -197,10 +201,21 @@ namespace DX11Renderer
 			return false;
 		}
 
+		// calculate delta mouse world XZ once per frame on CPU and avoid zero vector
+		if (deltaMouseXZ.x * deltaMouseXZ.x + deltaMouseXZ.y * deltaMouseXZ.y < 1e-5 + 1e-5)
+		{
+			deltaMouseXZ = m_lastDeltaMouseXZ;
+		}
+		m_lastDeltaMouseXZ = deltaMouseXZ;
+		XMFLOAT2 normDeltaMouseXZ = deltaMouseXZ;
+		NormalizeFloat2(normDeltaMouseXZ);
+
 		CBuffer* dataPtr = (CBuffer*)mappedResource.pData;
 
 		dataPtr->mouseXZ = mouseXZ;
+		dataPtr->deltaMouseXZ = normDeltaMouseXZ;
 		dataPtr->time = totalTime;
+		dataPtr->deltaTime = deltaTimeInMicroseconds;
 		dataPtr->windType = windType;
 
 		// Unlock the constant buffer.

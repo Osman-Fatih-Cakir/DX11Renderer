@@ -2,6 +2,7 @@
 
 #include <directxmath.h>
 #include <random>
+#include <math.h>
 using namespace DirectX;
 
 namespace DX11Renderer
@@ -13,6 +14,12 @@ namespace DX11Renderer
 		return min + distribution(generator) * (max - min);
 	}
 
+	inline void NormalizeFloat2(XMFLOAT2& vec)
+	{
+		float denom = std::sqrtf(vec.x * vec.x + vec.y * vec.y);
+		vec.x = vec.x / denom;
+		vec.y = vec.y / denom;
+	}
 
 	inline void TranslationMatrix(float x, float y, float z, XMMATRIX& matrix)
 	{
@@ -44,4 +51,7 @@ namespace DX11Renderer
 
 		return { intersectPoint.x, intersectPoint.z };
 	}
+
+	template<class T>
+	inline T AlignOffset(const T& uOffset, const T& uAlign) { return ((uOffset + (uAlign - 1)) & ~(uAlign - 1)); }
 }
