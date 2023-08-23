@@ -16,6 +16,8 @@
 #define RADIUS 4.0f
 #define RADIUS_SQUARE (RADIUS * RADIUS)
 
+#define PI 3.14159265f
+
 Texture2D<float4> NoiseTexture : register(t0);
 Texture3D<float4> Prev_WindFlowMap : register(t1);
 RWTexture3D<float4> Next_WindFlowMap : register(u0);
@@ -66,7 +68,9 @@ float3 CalcMovementWind(uint2 coord, int2 worldCoord, float2 mouseXZ, float3 win
   noise *= 0.6f;
 
   float3 dir = { worldCoord.x - mouseXZ.x, windDir.y, worldCoord.y - mouseXZ.y };
-  dir += RADIUS * windDir * 0.5f;
+  dir = normalize(dir);
+  windDir = normalize(windDir) * 2.0f;
+  dir += windDir;
 
   float3 wind = normalize(dir) * noise;
 
@@ -95,10 +99,16 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
   {
     float3 windDir = { 1.0f, 1.0f, 1.0f };
     wind.xyz = CalcDirectionalWind(coord.xy, windDir);
+
+    float distanceFade = 1.0f - (distSquare / RADIUS_SQUARE);
+    wind.xyz *= distanceFade;
   }
   else if (windType == 1 && insideRadius) // omni-directional
   {
     wind.xyz = CalcOmniWind(coord.xy, worldCoord, mouseXZ);
+
+    float distanceFade = 1.0f - (distSquare / RADIUS_SQUARE);
+    wind.xyz *= distanceFade;
   }
   else if (windType == 2) // circular
   {
@@ -107,7 +117,7 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
   else // if windType == 3 // movement wind
   {
     // movement wind fade calculation
-    float fadeSpeed = deltaTime * 0.000002f;
+    float fadeSpeed = deltaTime * 0.00000002f;
     wind.w = CalcMovementWindMultiplier(wind.w, fadeSpeed);
     float3 lastWindDir = Next_WindFlowMap[coord].xyz; // sample 2 previous frame data
     float3 windDir = lastWindDir;
@@ -115,24 +125,24 @@ void Main(uint3 dispatchThreadID : SV_DispatchThreadID)
     // wind direction
     if (insideRadius)
     {
-      windDir = float3(deltaMouseXZ.x, 0.0f, deltaMouseXZ.y);
-      wind.w = 1.0f;
+      float3 newWindDir = float3(deltaMouseXZ.x, 0.0f, deltaMouseXZ.y);
+
+      float2 mouseToWorld = normalize(float2(worldCoord.x - mouseXZ.x, worldCoord.y - mouseXZ.y));
+      bool inFront = dot(normalize(newWindDir.xz), mouseToWorld) > cos(PI / 4.0f);
+      if (inFront)
+      {
+        windDir = newWindDir;
+        wind.w = 1.0f;
+
+        float distanceFade = 1.0f - (distSquare / RADIUS_SQUARE);
+        wind.xyz = CalcMovementWind(coord.xy, worldCoord, mouseXZ, windDir) * distanceFade;
+      }
     }
 
-    if (wind.w > 0.01f)
-    {
-      wind.xyz = CalcMovementWind(coord.xy, worldCoord, mouseXZ, windDir);
-      wind.xyz = (wind.xyz + lastWindDir) / 2.0f;
+    wind.xyz = (wind.xyz + lastWindDir) / 2.0f;
 
-      // apply movement wind fade
-      wind.xyz *= wind.w;
-    }
-  }
-
-  if (insideRadius)
-  {
-    float distanceFade = 1.0f - (distSquare / RADIUS_SQUARE);
-    wind.xyz *= distanceFade;
+    // apply movement wind fade
+    wind.xyz *= wind.w;
   }
 
   Next_WindFlowMap[coord] = wind;

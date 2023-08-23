@@ -1,4 +1,8 @@
 
+FIX:
+-movement wind when going from A to B, the behind grasses direction is B to A
+-since the edge of the radius wind is 0 (cz of the radius fade), how the wind is
+	being left behind with a value bigger than 0?!
 
 TARGETS:
 1- use omni-directional wind for wake motors (motion as wind)
@@ -27,14 +31,17 @@ TASKS:
 		[ ] in tech talk, the direction of the wind changes the sampling direction of the noise texture and
 			it works. What?? How?!
 		[+] movement wind with calculating the direction of the wind using deltaMouseXZ
-		[ ] the flickering is very obvious. find a solution.
-			- In tech talk the grasses flip a lot but in the sim it seems fine. so they use WIND SIM. implement it
 		[ ] make spiral wind
 	[+] use squared distance instead of distance for distance calculation in shader
-	[ ] the mouse position and the center of the wind motor are slightly offsetted because of the texels of the
+	[+] the mouse position and the center of the wind motor are slightly offsetted because of the texels of the
 		wind texture (using indices for positions on compute shader causes this). Fix it
 	[ ] Create the best visual and show the outputs (make a Youtube video and link it in Readme)
 [ ] Next
+	- ?wind sim
+		[ ] make a force texture
+			- this texture will be filled for any new wind force applying
+		[ ] calculate a wind sim using prev wind and wind force
+			- tricky: what if speed of the wind is too high and we need to jump more than one texels?
 	- terrain generation and grass on top of it
 	- make the bending grasses with bezier curves and wind as Ghost of Tsushima grass talk
 	- sky rendering and lighting

@@ -54,9 +54,9 @@ PixelInputType Main(VertexInputType input, uint instanceID : SV_InstanceID)
 
   float height = worldPos.y / 0.6f;
 
-  float x = (instanceWorldPos.x + tilePosition.x + (WIND_TEXTURE_WIDTH / 2)) / WIND_TEXTURE_WIDTH;
-  float z = (instanceWorldPos.z + tilePosition.z + (WIND_TEXTURE_HEIGHT / 2)) / WIND_TEXTURE_HEIGHT;
-  float3 coord = { x,z, 0.0f };
+  float x = (0.5f + instanceWorldPos.x + tilePosition.x + (WIND_TEXTURE_WIDTH / 2)) / WIND_TEXTURE_WIDTH;
+  float z = (0.5f + instanceWorldPos.z + tilePosition.z + (WIND_TEXTURE_HEIGHT / 2)) / WIND_TEXTURE_HEIGHT;
+  float3 coord = { x, z, 0.0f };
   float3 wind = windTexture.SampleLevel(samplerState, coord, 0).xyz * height * height;
   float4 windedWorldPos = worldPos;
   windedWorldPos.xyz += wind;
